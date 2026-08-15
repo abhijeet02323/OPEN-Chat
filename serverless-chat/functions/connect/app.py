@@ -1,9 +1,10 @@
-import boto3
 import os
+import boto3
+
 
 dynamodb = boto3.resource("dynamodb")
 
-table = dynamodb.Table(
+connections_table = dynamodb.Table(
     os.environ["CONNECTIONS_TABLE"]
 )
 
@@ -12,13 +13,14 @@ def lambda_handler(event, context):
 
     connection_id = event["requestContext"]["connectionId"]
 
-    table.put_item(
+    connections_table.put_item(
         Item={
             "connectionId": connection_id
         }
     )
 
+    print(f"WebSocket connected: {connection_id}")
+
     return {
-        "statusCode": 200,
-        "body": "Connected"
+        "statusCode": 200
     }
