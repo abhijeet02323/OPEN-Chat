@@ -1,6 +1,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Serverless real-time chat application using API Gateway WebSocket, Lambda and DynamoDB
+
+Description: Serverless real-time chat application
 
 Parameters:
   StageName:
@@ -9,49 +10,53 @@ Parameters:
 
 Resources:
 
-  # ---------------------------------------------------------
-  # DynamoDB - Active WebSocket Connections
-  # ---------------------------------------------------------
+  ConnectionsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub '${AWS::StackName}-connections'
+      BillingMode: PAY_PER_REQUEST
 
-ConnectionsTable:
-  Type: AWS::DynamoDB::Table
-  Properties:
-    TableName: !Sub '${AWS::StackName}-connections'
-    BillingMode: PAY_PER_REQUEST
-    AttributeDefinitions:
-      - AttributeName: roomId
-        AttributeType: S
-      - AttributeName: connectionId
-        AttributeType: S
-    KeySchema:
-      - AttributeName: roomId
-        KeyType: HASH
-      - AttributeName: connectionId
-        KeyType: RANGE
+      AttributeDefinitions:
+        - AttributeName: roomId
+          AttributeType: S
 
-  # ---------------------------------------------------------
-  # DynamoDB - Chat Messages
-  # ---------------------------------------------------------
+        - AttributeName: connectionId
+          AttributeType: S
+
+      KeySchema:
+        - AttributeName: roomId
+          KeyType: HASH
+
+        - AttributeName: connectionId
+          KeyType: RANGE
+
+      GlobalSecondaryIndexes:
+        - IndexName: ConnectionIdIndex
+          KeySchema:
+            - AttributeName: connectionId
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
 
   MessagesTable:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: !Sub '${AWS::StackName}-messages'
       BillingMode: PAY_PER_REQUEST
+
       AttributeDefinitions:
         - AttributeName: roomId
           AttributeType: S
+
         - AttributeName: timestamp
           AttributeType: S
+
       KeySchema:
         - AttributeName: roomId
           KeyType: HASH
+
         - AttributeName: timestamp
           KeyType: RANGE
-
-  # ---------------------------------------------------------
-  # API Gateway WebSocket API
-  # ---------------------------------------------------------
 
   ChatWebSocketApi:
     Type: AWS::ApiGatewayV2::Api
@@ -60,10 +65,6 @@ ConnectionsTable:
       ProtocolType: WEBSOCKET
       RouteSelectionExpression: '$request.body.action'
 
-  # ---------------------------------------------------------
-  # Lambda - Connect
-  # ---------------------------------------------------------
-
   ConnectFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -71,16 +72,14 @@ ConnectionsTable:
       Handler: app.lambda_handler
       Runtime: python3.14
       Timeout: 10
+
       Environment:
         Variables:
           CONNECTIONS_TABLE: !Ref ConnectionsTable
+
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref ConnectionsTable
-
-  # ---------------------------------------------------------
-  # Lambda - Disconnect
-  # ---------------------------------------------------------
 
   DisconnectFunction:
     Type: AWS::Serverless::Function
@@ -89,16 +88,14 @@ ConnectionsTable:
       Handler: app.lambda_handler
       Runtime: python3.14
       Timeout: 10
+
       Environment:
         Variables:
           CONNECTIONS_TABLE: !Ref ConnectionsTable
+
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref ConnectionsTable
-
-  # ---------------------------------------------------------
-  # Lambda - Send Message
-  # ---------------------------------------------------------
 
   SendMessageFunction:
     Type: AWS::Serverless::Function
@@ -107,19 +104,24 @@ ConnectionsTable:
       Handler: app.lambda_handler
       Runtime: python3.14
       Timeout: 15
+
       Environment:
         Variables:
           CONNECTIONS_TABLE: !Ref ConnectionsTable
           MESSAGES_TABLE: !Ref MessagesTable
           WEBSOCKET_ENDPOINT: !Sub
             - '${ApiEndpoint}/${Stage}'
-            - ApiEndpoint: !Sub 'https://${ChatWebSocketApi}.execute-api.${AWS::Region}.amazonaws.com'
+            - ApiEndpoint: !Sub
+                'https://${ChatWebSocketApi}.execute-api.${AWS::Region}.amazonaws.com'
               Stage: !Ref StageName
+
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref ConnectionsTable
+
         - DynamoDBCrudPolicy:
             TableName: !Ref MessagesTable
+
         - Statement:
             - Effect: Allow
               Action:
@@ -129,10 +131,6 @@ ConnectionsTable:
                 - ApiId: !Ref ChatWebSocketApi
                   Stage: !Ref StageName
 
-  # ---------------------------------------------------------
-  # Lambda - Get Messages
-  # ---------------------------------------------------------
-
   GetMessagesFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -140,13 +138,16 @@ ConnectionsTable:
       Handler: app.lambda_handler
       Runtime: python3.14
       Timeout: 10
+
       Environment:
         Variables:
           MESSAGES_TABLE: !Ref MessagesTable
           WEBSOCKET_ENDPOINT: !Sub
             - '${ApiEndpoint}/${Stage}'
-            - ApiEndpoint: !Sub 'https://${ChatWebSocketApi}.execute-api.${AWS::Region}.amazonaws.com'
+            - ApiEndpoint: !Sub
+                'https://${ChatWebSocketApi}.execute-api.${AWS::Region}.amazonaws.com'
               Stage: !Ref StageName
+
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref MessagesTable
@@ -159,9 +160,6 @@ ConnectionsTable:
                 - 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/${Stage}/*'
                 - ApiId: !Ref ChatWebSocketApi
                   Stage: !Ref StageName
-  # ---------------------------------------------------------
-  # WebSocket Integrations
-  # ---------------------------------------------------------
 
   ConnectIntegration:
     Type: AWS::ApiGatewayV2::Integration
@@ -199,10 +197,6 @@ ConnectionsTable:
         - 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${FunctionArn}/invocations'
         - FunctionArn: !GetAtt GetMessagesFunction.Arn
 
-  # ---------------------------------------------------------
-  # WebSocket Routes
-  # ---------------------------------------------------------
-
   ConnectRoute:
     Type: AWS::ApiGatewayV2::Route
     Properties:
@@ -234,10 +228,6 @@ ConnectionsTable:
       AuthorizationType: NONE
       Target: !Sub 'integrations/${GetMessagesIntegration}'
 
-  # ---------------------------------------------------------
-  # WebSocket Deployment
-  # ---------------------------------------------------------
-
   ChatDeployment:
     Type: AWS::ApiGatewayV2::Deployment
     DependsOn:
@@ -254,10 +244,6 @@ ConnectionsTable:
       ApiId: !Ref ChatWebSocketApi
       StageName: !Ref StageName
       DeploymentId: !Ref ChatDeployment
-
-  # ---------------------------------------------------------
-  # Lambda Permissions for API Gateway
-  # ---------------------------------------------------------
 
   ConnectPermission:
     Type: AWS::Lambda::Permission
@@ -291,7 +277,8 @@ Outputs:
 
   WebSocketURL:
     Description: WebSocket URL for the chat application
-    Value: !Sub 'wss://${ChatWebSocketApi}.execute-api.${AWS::Region}.amazonaws.com/${StageName}'
+    Value: !Sub
+      'wss://${ChatWebSocketApi}.execute-api.${AWS::Region}.amazonaws.com/${StageName}'
 
   ConnectionsTable:
     Description: DynamoDB connections table
