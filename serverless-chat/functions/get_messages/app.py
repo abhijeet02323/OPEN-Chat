@@ -7,27 +7,42 @@ from boto3.dynamodb.conditions import Key
 
 dynamodb = boto3.resource("dynamodb")
 
-table = dynamodb.Table(
+messages_table = dynamodb.Table(
     os.environ["MESSAGES_TABLE"]
+)
+
+apigateway = boto3.client(
+    "apigatewaymanagementapi",
+    endpoint_url=os.environ["WEBSOCKET_ENDPOINT"]
 )
 
 
 def lambda_handler(event, context):
 
+    connection_id = event["requestContext"]["connectionId"]
+
     body = json.loads(event.get("body", "{}"))
 
     room_id = body.get("roomId", "general")
 
-    response = table.query(
-        KeyConditionExpression=Key("roomId").eq(room_id)
+    response = messages_table.query(
+        KeyConditionExpression=Key("roomId").eq(room_id),
+        ScanIndexForward=True
     )
 
     messages = response.get("Items", [])
 
+    payload = json.dumps({
+        "type": "messageHistory",
+        "roomId": room_id,
+        "messages": messages
+    }).encode("utf-8")
+
+    apigateway.post_to_connection(
+        ConnectionId=connection_id,
+        Data=payload
+    )
+
     return {
-        "statusCode": 200,
-        "body": json.dumps({
-            "type": "messageHistory",
-            "messages": messages
-        })
+        "statusCode": 200
     }
