@@ -147,6 +147,14 @@ Resources:
         - DynamoDBReadPolicy:
             TableName: !Ref MessagesTable
 
+        - Statement:
+            - Effect: Allow
+              Action:
+                - execute-api:ManageConnections
+              Resource: !Sub
+                - 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/${Stage}/*'
+                - ApiId: !Ref ChatWebSocketApi
+                  Stage: !Ref StageName
   # ---------------------------------------------------------
   # WebSocket Integrations
   # ---------------------------------------------------------
