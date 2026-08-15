@@ -139,6 +139,10 @@ Resources:
       Environment:
         Variables:
           MESSAGES_TABLE: !Ref MessagesTable
+          WEBSOCKET_ENDPOINT: !Sub
+            - '${ApiEndpoint}/${Stage}'
+            - ApiEndpoint: !Sub 'https://${ChatWebSocketApi}.execute-api.${AWS::Region}.amazonaws.com'
+              Stage: !Ref StageName
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref MessagesTable
