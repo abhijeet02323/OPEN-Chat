@@ -1,11 +1,13 @@
 import json
 import os
 from datetime import datetime, timezone
-
+import uuid
 import boto3
 
 
 dynamodb = boto3.resource("dynamodb")
+
+message_id = str(uuid.uuid4())
 
 connections_table = dynamodb.Table(
     os.environ["CONNECTIONS_TABLE"]
@@ -21,9 +23,16 @@ apigateway = boto3.client(
 )
 
 
+
 def lambda_handler(event, context):
 
-    body = json.loads(event.get("body", "{}"))
+    try:
+        body = json.loads(event.get("body", "{}"))
+    except json.JSONDecodeError:
+        return {
+            "statusCode": 400,
+            "body": "Invalid JSON"
+        }
 
     room_id = body.get("roomId", "general")
     sender = body.get("sender", "Anonymous")
@@ -35,9 +44,23 @@ def lambda_handler(event, context):
             "body": "Message cannot be empty"
         }
 
+    if len(message) > 2000:
+        return {
+            "statusCode": 400,
+            "body": "Message is too long"
+        }
+
+    if len(sender) > 100:
+        return {
+            "statusCode": 400,
+            "body": "Sender name is too long"
+        }
+
+  
     timestamp = datetime.now(timezone.utc).isoformat()
 
     chat_message = {
+        "messageId": message_id,
         "roomId": room_id,
         "timestamp": timestamp,
         "sender": sender,

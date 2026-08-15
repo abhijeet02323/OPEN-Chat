@@ -13,17 +13,21 @@ Resources:
   # DynamoDB - Active WebSocket Connections
   # ---------------------------------------------------------
 
-  ConnectionsTable:
-    Type: AWS::DynamoDB::Table
-    Properties:
-      TableName: !Sub '${AWS::StackName}-connections'
-      BillingMode: PAY_PER_REQUEST
-      AttributeDefinitions:
-        - AttributeName: connectionId
-          AttributeType: S
-      KeySchema:
-        - AttributeName: connectionId
-          KeyType: HASH
+ConnectionsTable:
+  Type: AWS::DynamoDB::Table
+  Properties:
+    TableName: !Sub '${AWS::StackName}-connections'
+    BillingMode: PAY_PER_REQUEST
+    AttributeDefinitions:
+      - AttributeName: roomId
+        AttributeType: S
+      - AttributeName: connectionId
+        AttributeType: S
+    KeySchema:
+      - AttributeName: roomId
+        KeyType: HASH
+      - AttributeName: connectionId
+        KeyType: RANGE
 
   # ---------------------------------------------------------
   # DynamoDB - Chat Messages
