@@ -2,7 +2,7 @@
 
 A real-time messaging application built using a **serverless AWS architecture**. The project uses **Amazon API Gateway WebSocket APIs, AWS Lambda, and Amazon DynamoDB** to provide real-time communication without maintaining a traditional always-running chat server.
 
-The frontend is a lightweight **HTML, CSS, and JavaScript** application that connects directly to the AWS WebSocket endpoint.
+The frontend is a lightweight **HTML, CSS, and JavaScript** application that connects to the AWS WebSocket endpoint. User registration and login are handled by Lambda functions backed by MongoDB; chat messages and connection state remain in DynamoDB.
 
 > **Project status:** Working MVP with room-aware real-time messaging, message history, responsive chat UI, and AWS SAM-based infrastructure deployment. Authentication, advanced presence features, pagination, and additional production hardening are planned for upcoming versions.
 
@@ -157,6 +157,7 @@ development  connection-C
 | **AWS Lambda** | Serverless compute | Connect, disconnect, send-message, and history operations |
 | **Amazon API Gateway WebSocket API** | Real-time transport | WebSocket connections and route handling |
 | **Amazon DynamoDB** | NoSQL database | Messages and active connection records |
+| **MongoDB** | User database | Usernames and securely hashed passwords |
 | **AWS SAM** | Infrastructure/deployment | Defines, builds, and deploys the serverless application |
 | **AWS CloudFormation** | Infrastructure provisioning | Creates and updates AWS resources from the SAM template |
 | **Boto3** | AWS SDK for Python | DynamoDB and AWS API access from Lambda |
@@ -302,7 +303,23 @@ samconfig.toml
 
 Adjust the region and deployment parameters for your AWS account if required.
 
-### 3. Build
+### 3. Configure authentication
+
+Authentication requires a MongoDB database (for example, MongoDB Atlas). Create a database user with access to the `serverless_chat` database, and prepare a connection URI. Do not commit this URI or the token secret to source control.
+
+Deploy with the required parameters:
+
+```bash
+sam deploy --guided \
+  --parameter-overrides \
+  'StageName="prod" MongoDbUri="mongodb+srv://<user>:<password>@<cluster>/" AuthTokenSecret="<long-random-secret>"'
+```
+
+After deployment, copy the `AuthApiURL` CloudFormation output into `AUTH_API_BASE_URL` in `frontend/app.js`. The existing `WS_BASE_URL` must likewise match the `WebSocketURL` output.
+
+For MongoDB Atlas, allow network access from the deployed Lambda functions. For production, use a controlled network configuration and restrict the allowed origin in the `AuthApi` CORS configuration.
+
+### 4. Build
 
 ```bash
 sam build
@@ -314,13 +331,13 @@ Expected result:
 Build Succeeded
 ```
 
-### 4. Validate
+### 5. Validate
 
 ```bash
 aws cloudformation validate-template   --template-body file://template.yaml   --region <your-region>
 ```
 
-### 5. Deploy
+### 6. Deploy
 
 First deployment:
 
@@ -355,7 +372,7 @@ The frontend uses the WebSocket endpoint of the deployed API.
 
 ## 💬 Using the Application
 
-1. Enter a username.
+1. Register a username and password, or log in with an existing account.
 2. Select a room, or create one from the chat sidebar after joining.
 3. Click **Join Chat**.
 4. Send messages using the input box.
@@ -437,9 +454,9 @@ This is currently an **MVP/learning and portfolio project**, not a production-ha
 
 Current limitations:
 
-- Authentication is not implemented yet.
-- The frontend currently supplies the username.
-- Production authorization is still being improved.
+- User credentials are stored in MongoDB as PBKDF2 password hashes; plaintext passwords are never stored.
+- A signed, 12-hour session token is required to open a WebSocket connection. The backend derives the message sender from that authenticated connection rather than trusting the browser payload.
+- Production hardening should move the MongoDB URI and signing secret to AWS Secrets Manager, restrict CORS, and add token revocation/refresh support.
 - The client retries a dropped WebSocket connection up to five times with exponential backoff. It does not yet provide a manual retry control after those attempts are exhausted.
 - Message pagination is planned.
 - Automated tests are planned.

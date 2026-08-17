@@ -11,6 +11,10 @@ messages_table = dynamodb.Table(
     os.environ["MESSAGES_TABLE"]
 )
 
+connections_table = dynamodb.Table(
+    os.environ["CONNECTIONS_TABLE"]
+)
+
 apigateway = boto3.client(
     "apigatewaymanagementapi",
     endpoint_url=os.environ["WEBSOCKET_ENDPOINT"]
@@ -24,6 +28,15 @@ def lambda_handler(event, context):
     body = json.loads(event.get("body", "{}"))
 
     room_id = body.get("roomId", "general")
+
+    connection_response = connections_table.query(
+        IndexName="ConnectionIdIndex",
+        KeyConditionExpression=Key("connectionId").eq(connection_id)
+    )
+    connection = (connection_response.get("Items") or [None])[0]
+
+    if not connection or connection["roomId"] != room_id:
+        return {"statusCode": 401}
 
     response = messages_table.query(
         KeyConditionExpression=Key("roomId").eq(room_id),

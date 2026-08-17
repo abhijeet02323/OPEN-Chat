@@ -8,6 +8,16 @@ Parameters:
     Type: String
     Default: prod
 
+  MongoDbUri:
+    Type: String
+    NoEcho: true
+    Description: MongoDB connection string for the authentication users database.
+
+  AuthTokenSecret:
+    Type: String
+    NoEcho: true
+    Description: A long random secret used to sign chat session tokens.
+
 Resources:
 
   ConnectionsTable:
@@ -65,6 +75,57 @@ Resources:
       ProtocolType: WEBSOCKET
       RouteSelectionExpression: '$request.body.action'
 
+  AuthApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowOrigins:
+          - '*'
+        AllowHeaders:
+          - Content-Type
+        AllowMethods:
+          - POST
+
+  RegisterFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/auth_register/
+      Handler: app.lambda_handler
+      Runtime: python3.14
+      Timeout: 10
+      Environment:
+        Variables:
+          MONGODB_URI: !Ref MongoDbUri
+          MONGODB_DATABASE: serverless_chat
+          AUTH_TOKEN_SECRET: !Ref AuthTokenSecret
+      Events:
+        Register:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref AuthApi
+            Path: /auth/register
+            Method: POST
+
+  LoginFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/auth_login/
+      Handler: app.lambda_handler
+      Runtime: python3.14
+      Timeout: 10
+      Environment:
+        Variables:
+          MONGODB_URI: !Ref MongoDbUri
+          MONGODB_DATABASE: serverless_chat
+          AUTH_TOKEN_SECRET: !Ref AuthTokenSecret
+      Events:
+        Login:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref AuthApi
+            Path: /auth/login
+            Method: POST
+
   ConnectFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -76,6 +137,7 @@ Resources:
       Environment:
         Variables:
           CONNECTIONS_TABLE: !Ref ConnectionsTable
+          AUTH_TOKEN_SECRET: !Ref AuthTokenSecret
 
       Policies:
         - DynamoDBCrudPolicy:
@@ -142,6 +204,7 @@ Resources:
       Environment:
         Variables:
           MESSAGES_TABLE: !Ref MessagesTable
+          CONNECTIONS_TABLE: !Ref ConnectionsTable
           WEBSOCKET_ENDPOINT: !Sub
             - '${ApiEndpoint}/${Stage}'
             - ApiEndpoint: !Sub
@@ -151,6 +214,9 @@ Resources:
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref MessagesTable
+
+        - DynamoDBReadPolicy:
+            TableName: !Ref ConnectionsTable
 
         - Statement:
             - Effect: Allow
@@ -279,6 +345,10 @@ Outputs:
     Description: WebSocket URL for the chat application
     Value: !Sub
       'wss://${ChatWebSocketApi}.execute-api.${AWS::Region}.amazonaws.com/${StageName}'
+
+  AuthApiURL:
+    Description: HTTP API URL for registration and login. Set this in frontend/app.js.
+    Value: !Sub 'https://${AuthApi}.execute-api.${AWS::Region}.amazonaws.com'
 
   ConnectionsTable:
     Description: DynamoDB connections table

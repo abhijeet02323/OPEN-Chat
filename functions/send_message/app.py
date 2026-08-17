@@ -42,11 +42,6 @@ def lambda_handler(event, context):
         "general"
     )
 
-    sender = body.get(
-        "sender",
-        "Anonymous"
-    )
-
     message = body.get(
         "message",
         ""
@@ -70,12 +65,17 @@ def lambda_handler(event, context):
             "body": "Message is too long"
         }
 
-    if len(sender) > 100:
+    connection_id = event["requestContext"]["connectionId"]
+    connection_response = connections_table.query(
+        IndexName="ConnectionIdIndex",
+        KeyConditionExpression=Key("connectionId").eq(connection_id)
+    )
+    connection = (connection_response.get("Items") or [None])[0]
 
-        return {
-            "statusCode": 400,
-            "body": "Sender name is too long"
-        }
+    if not connection or connection["roomId"] != room_id:
+        return {"statusCode": 401, "body": "Unauthorised connection"}
+
+    sender = connection["username"]
 
     # -----------------------------
     # Create message
