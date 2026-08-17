@@ -22,7 +22,6 @@ The frontend is a lightweight **HTML, CSS, and JavaScript** application that con
 - [Testing](#-testing)
 - [How This Differs From Traditional Chat Systems](#-how-this-differs-from-traditional-chat-systems)
 - [Contributing](#-contributing)
-- [License](#-license)
 - [Author](#-author)
 
 ## 🚀 About the Project
