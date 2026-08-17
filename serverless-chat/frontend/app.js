@@ -88,7 +88,6 @@ joinForm.addEventListener("submit", (event) => {
     connectToRoom(currentRoom);
 });
 
-
 // ============================================
 // Show Chat Screen
 // ============================================
@@ -635,6 +634,8 @@ function updateConnectionStatus(
             "disconnected"
         );
     }
+
+    updateSendButton();
 }
 
 
@@ -687,16 +688,11 @@ roomButtons.forEach((button) => {
 
 function switchRoom(newRoom) {
 
-    console.log(
-        `Switching room: ${currentRoom} → ${newRoom}`
-    );
-
-
-    if (socket) {
-
-        socket.close();
-
-        socket = null;
+    if (
+        !newRoom ||
+        newRoom === currentRoom
+    ) {
+        return;
     }
 
 
@@ -705,6 +701,17 @@ function switchRoom(newRoom) {
     updateRoomUI();
 
     clearMessages();
+
+
+    if (socket) {
+
+        socket.onclose = null;
+
+        socket.close();
+
+        socket = null;
+    }
+
 
     connectToRoom(newRoom);
 }
@@ -743,10 +750,12 @@ function getInitials(name) {
     ).toUpperCase();
 }
 
-backButton.addEventListener(
-    "click",
-    leaveChat
-);
+if (backButton) {
+    backButton.addEventListener(
+        "click",
+        leaveChat
+    );
+}
 
 function leaveChat() {
 
@@ -785,3 +794,17 @@ function leaveChat() {
         "disconnected"
     );
 }
+
+// disable send button if not connected
+
+function updateSendButton() {
+
+    const connected =
+        socket &&
+        socket.readyState === WebSocket.OPEN;
+
+    document.getElementById(
+        "send-button"
+    ).disabled = !connected;
+}
+
