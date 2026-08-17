@@ -1,182 +1,155 @@
-<!DOCTYPE html>
-<html lang="en">
+<!-- ============================= -->
+<!-- Chat Screen                   -->
+<!-- ============================= -->
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<section id="chat-screen" class="screen hidden">
 
-    <title>Serverless Chat</title>
+    <div class="chat-container">
 
-    <link rel="stylesheet" href="style.css">
-</head>
+        <!-- Header -->
 
-<body>
+        <header class="chat-header">
 
-    <!-- ============================= -->
-    <!-- Join Screen                    -->
-    <!-- ============================= -->
+            <div class="header-left">
 
-    <section id="join-screen" class="screen">
+                <!-- Mobile / Back Button -->
 
-        <div class="join-card">
-
-            <div class="logo">
-                ⚡
-            </div>
-
-            <h1>Serverless Chat</h1>
-
-            <p class="subtitle">
-                Real-time messaging powered by AWS
-            </p>
-
-            <form id="join-form">
-
-                <label for="username">
-                    Username
-                </label>
-
-                <input
-                    type="text"
-                    id="username"
-                    placeholder="Enter your username"
-                    maxlength="100"
-                    required
+                <button
+                    id="back-button"
+                    class="back-button"
+                    type="button"
+                    aria-label="Back"
                 >
-
-                <label for="room">
-                    Room
-                </label>
-
-                <select id="room">
-                    <option value="general">General</option>
-                    <option value="development">Development</option>
-                    <option value="random">Random</option>
-                </select>
-
-                <button type="submit">
-                    Join Chat
+                    ←
                 </button>
 
-            </form>
+                <div class="chat-logo">
+                    ⚡
+                </div>
 
-            <div id="join-error" class="error"></div>
+                <div class="header-info">
 
-        </div>
-
-    </section>
-
-
-    <!-- ============================= -->
-    <!-- Chat Screen                    -->
-    <!-- ============================= -->
-
-    <section id="chat-screen" class="screen hidden">
-
-        <div class="chat-container">
-
-            <!-- Header -->
-
-            <header class="chat-header">
-
-                <div>
-                    <h2>⚡ Serverless Chat</h2>
+                    <h2>Serverless Chat</h2>
 
                     <span id="current-room">
                         # general
                     </span>
-                </div>
-
-                <div class="connection-status">
-
-                    <span
-                        id="status-indicator"
-                        class="status-dot"
-                    ></span>
-
-                    <span id="connection-status">
-                        Connecting...
-                    </span>
 
                 </div>
 
-            </header>
+            </div>
 
 
-            <!-- Main Chat -->
+            <div class="connection-status">
 
-            <main class="chat-main">
+                <span
+                    id="status-indicator"
+                    class="status-dot"
+                ></span>
 
-                <aside class="sidebar">
+                <span id="connection-status">
+                    Connecting...
+                </span>
+
+            </div>
+
+        </header>
+
+
+        <!-- Main Chat -->
+
+        <main class="chat-main">
+
+            <!-- Sidebar -->
+
+            <aside class="sidebar">
+
+                <div class="sidebar-header">
 
                     <h3>Rooms</h3>
 
-                    <button
-                        class="room-button active"
-                        data-room="general"
+                </div>
+
+
+                <button
+                    class="room-button active"
+                    data-room="general"
+                >
+                    <span>#</span>
+                    <span>general</span>
+                </button>
+
+
+                <button
+                    class="room-button"
+                    data-room="development"
+                >
+                    <span>#</span>
+                    <span>development</span>
+                </button>
+
+
+                <button
+                    class="room-button"
+                    data-room="random"
+                >
+                    <span>#</span>
+                    <span>random</span>
+                </button>
+
+            </aside>
+
+
+            <!-- Messages -->
+
+            <section class="messages-section">
+
+                <div
+                    id="messages"
+                    class="messages"
+                >
+
+                    <!-- Empty state is controlled by JS -->
+
+                </div>
+
+
+                <div
+                    id="typing-indicator"
+                    class="typing-indicator"
+                ></div>
+
+
+                <!-- Message Input -->
+
+                <form
+                    id="message-form"
+                    class="message-form"
+                >
+
+                    <input
+                        type="text"
+                        id="message-input"
+                        placeholder="Type a message..."
+                        autocomplete="off"
+                        maxlength="2000"
                     >
-                        # general
+
+
+                    <button
+                        type="submit"
+                        id="send-button"
+                        aria-label="Send message"
+                    >
+                        ➤
                     </button>
 
-                    <button
-                        class="room-button"
-                        data-room="development"
-                    >
-                        # development
-                    </button>
+                </form>
 
-                    <button
-                        class="room-button"
-                        data-room="random"
-                    >
-                        # random
-                    </button>
+            </section>
 
-                </aside>
+        </main>
 
+    </div>
 
-                <section class="messages-section">
-
-                    <div
-                        id="messages"
-                        class="messages"
-                    ></div>
-
-                    <div
-                        id="typing-indicator"
-                        class="typing-indicator"
-                    ></div>
-
-                    <form
-                        id="message-form"
-                        class="message-form"
-                    >
-
-                        <input
-                            type="text"
-                            id="message-input"
-                            placeholder="Type a message..."
-                            autocomplete="off"
-                            maxlength="2000"
-                        >
-
-                        <button type="submit">
-                            ➤
-                        </button>
-
-                    </form>
-
-                </section>
-
-            </main>
-
-        </div>
-
-    </section>
-
-
-    <script src="app.js"></script>
-
-</body>
-
-</html>
+</section>
