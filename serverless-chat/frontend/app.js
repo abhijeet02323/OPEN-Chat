@@ -742,3 +742,46 @@ function getInitials(name) {
         words[words.length - 1][0]
     ).toUpperCase();
 }
+
+backButton.addEventListener(
+    "click",
+    leaveChat
+);
+
+function leaveChat() {
+
+    if (socket) {
+
+        socket.close();
+
+        socket = null;
+    }
+
+
+    username = "";
+
+    currentRoom = "";
+
+
+    clearMessages();
+
+
+    chatScreen.classList.add(
+        "hidden"
+    );
+
+    joinScreen.classList.remove(
+        "hidden"
+    );
+
+
+    usernameInput.value = "";
+
+    joinError.textContent = "";
+
+
+    updateConnectionStatus(
+        "Disconnected",
+        "disconnected"
+    );
+}
