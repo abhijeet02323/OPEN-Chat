@@ -56,6 +56,11 @@ const roomButtons =
     document.querySelectorAll(".room-button");
 
 
+
+/// Back button functionality
+const backButton =
+    document.getElementById("back-button");
+
 // ============================================
 // Join Chat
 // ============================================
@@ -325,7 +330,14 @@ messageForm.addEventListener(
 
 function loadMessageHistory(messages) {
 
-    clearMessages();
+    messagesContainer.innerHTML = "";
+
+    if (!messages.length) {
+
+        showEmptyRoom();
+
+        return;
+    }
 
     messages.forEach((message) => {
 
@@ -335,12 +347,22 @@ function loadMessageHistory(messages) {
     scrollToBottom();
 }
 
-
 // ============================================
 // Add Message to UI
 // ============================================
 
 function addMessage(message) {
+
+    // Remove empty-room state
+    const emptyState =
+        messagesContainer.querySelector(
+            ".empty-room"
+        );
+
+    if (emptyState) {
+        emptyState.remove();
+    }
+
 
     const messageElement =
         document.createElement("div");
@@ -348,9 +370,11 @@ function addMessage(message) {
     const isOwnMessage =
         message.sender === username;
 
+
     messageElement.classList.add(
         "message"
     );
+
 
     if (isOwnMessage) {
 
@@ -359,6 +383,39 @@ function addMessage(message) {
         );
     }
 
+
+    // ============================
+    // Avatar
+    // ============================
+
+    const avatar =
+        document.createElement("div");
+
+    avatar.classList.add(
+        "avatar"
+    );
+
+    avatar.textContent =
+        getInitials(
+            message.sender
+        );
+
+
+    // ============================
+    // Content
+    // ============================
+
+    const content =
+        document.createElement("div");
+
+    content.classList.add(
+        "message-content"
+    );
+
+
+    // ============================
+    // Header
+    // ============================
 
     const header =
         document.createElement("div");
@@ -376,7 +433,8 @@ function addMessage(message) {
     );
 
     sender.textContent =
-        message.sender || "Anonymous";
+        message.sender ||
+        "Anonymous";
 
 
     const timestamp =
@@ -392,10 +450,18 @@ function addMessage(message) {
         );
 
 
-    header.appendChild(sender);
+    header.appendChild(
+        sender
+    );
 
-    header.appendChild(timestamp);
+    header.appendChild(
+        timestamp
+    );
 
+
+    // ============================
+    // Message body
+    // ============================
 
     const body =
         document.createElement("div");
@@ -404,22 +470,33 @@ function addMessage(message) {
         "message-body"
     );
 
-    /*
-     * textContent is intentional.
-     * It prevents users from injecting HTML
-     * into the chat.
-     */
+
+    // IMPORTANT:
+    // textContent prevents HTML injection.
 
     body.textContent =
         message.message || "";
 
 
-    messageElement.appendChild(
+    // ============================
+    // Build message
+    // ============================
+
+    content.appendChild(
         header
     );
 
-    messageElement.appendChild(
+    content.appendChild(
         body
+    );
+
+
+    messageElement.appendChild(
+        avatar
+    );
+
+    messageElement.appendChild(
+        content
     );
 
 
@@ -428,10 +505,15 @@ function addMessage(message) {
     );
 
 
-    scrollToBottom();
+    // ============================
+    // Smart auto-scroll
+    // ============================
+
+    if (isNearBottom()) {
+
+        scrollToBottom();
+    }
 }
-
-
 // ============================================
 // Format Timestamp
 // ============================================
@@ -460,14 +542,44 @@ function formatTimestamp(timestamp) {
 
 
 // ============================================
-// Clear Messages
+// Clear Messages and Empty Room State
 // ============================================
 
 function clearMessages() {
 
     messagesContainer.innerHTML = "";
+
+    showEmptyRoom();
 }
 
+
+function showEmptyRoom() {
+
+    const emptyState =
+        document.createElement("div");
+
+    emptyState.className =
+        "empty-room";
+
+    emptyState.innerHTML = `
+        <div class="empty-room-icon">
+            💬
+        </div>
+
+        <h3>
+            No messages yet
+        </h3>
+
+        <p>
+            Be the first person to start
+            the conversation in #${escapeHtml(currentRoom)}.
+        </p>
+    `;
+
+    messagesContainer.appendChild(
+        emptyState
+    );
+}
 
 // ============================================
 // Scroll to Bottom
@@ -477,6 +589,18 @@ function scrollToBottom() {
 
     messagesContainer.scrollTop =
         messagesContainer.scrollHeight;
+}
+
+// Auto scroll to bottom when new messages arrive
+function isNearBottom() {
+
+    const threshold = 120;
+
+    return (
+        messagesContainer.scrollHeight -
+        messagesContainer.scrollTop -
+        messagesContainer.clientHeight
+    ) < threshold;
 }
 
 
@@ -583,4 +707,38 @@ function switchRoom(newRoom) {
     clearMessages();
 
     connectToRoom(newRoom);
+}
+
+function escapeHtml(value) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent = value;
+
+    return div.innerHTML;
+}
+
+// get initials from name as avatar text
+
+function getInitials(name) {
+
+    if (!name) {
+        return "?";
+    }
+
+    const words =
+        name.trim().split(/\s+/);
+
+    if (words.length === 1) {
+
+        return words[0]
+            .substring(0, 2)
+            .toUpperCase();
+    }
+
+    return (
+        words[0][0] +
+        words[words.length - 1][0]
+    ).toUpperCase();
 }
