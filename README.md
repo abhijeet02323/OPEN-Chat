@@ -1,130 +1,575 @@
-# serverless-chat
+# ⚡ Serverless Chat
 
-This project contains source code and supporting files for a serverless application that you can deploy with the SAM CLI. It includes the following files and folders.
+A real-time messaging application built using a **serverless AWS architecture**. The project uses **Amazon API Gateway WebSocket APIs, AWS Lambda, and Amazon DynamoDB** to provide real-time communication without maintaining a traditional always-running chat server.
 
-- hello_world - Code for the application's Lambda function.
-- events - Invocation events that you can use to invoke the function.
-- tests - Unit tests for the application code. 
-- template.yaml - A template that defines the application's AWS resources.
+The frontend is a lightweight **HTML, CSS, and JavaScript** application that connects directly to the AWS WebSocket endpoint.
 
-The application uses several AWS resources, including Lambda functions and an API Gateway API. These resources are defined in the `template.yaml` file in this project. You can update the template to add AWS resources through the same deployment process that updates your application code.
+> **Project status:** Working MVP with room-aware real-time messaging, message history, responsive chat UI, and AWS SAM-based infrastructure deployment. Authentication, advanced presence features, pagination, and additional production hardening are planned for upcoming versions.
 
-If you prefer to use an integrated development environment (IDE) to build and test your application, you can use the AWS Toolkit.  
-The AWS Toolkit is an open source plug-in for popular IDEs that uses the SAM CLI to build and deploy serverless applications on AWS. The AWS Toolkit also adds a simplified step-through debugging experience for Lambda function code. See the following links to get started.
+## 📌 Table of Contents
 
-* [CLion](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [GoLand](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [IntelliJ](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [WebStorm](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [Rider](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [PhpStorm](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [PyCharm](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [RubyMine](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [DataGrip](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [VS Code](https://docs.aws.amazon.com/toolkit-for-vscode/latest/userguide/welcome.html)
-* [Visual Studio](https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/welcome.html)
+- [About the Project](#-about-the-project)
+- [Architecture](#-architecture)
+- [Key Features](#-key-features)
+- [Technology Stack](#-technology-stack)
+- [How It Works](#-how-it-works)
+- [Project Structure](#-project-structure)
+- [Prerequisites](#-prerequisites)
+- [Installation and Setup](#-installation-and-setup)
+- [Deploying to AWS](#-deploying-to-aws)
+- [Running the Frontend Locally](#-running-the-frontend-locally)
+- [Using the Application](#-using-the-application)
+- [Testing](#-testing)
+- [How This Differs From Traditional Chat Systems](#-how-this-differs-from-traditional-chat-systems)
+- [Security and Current Limitations](#-security-and-current-limitations)
+- [Roadmap](#-roadmap)
+- [Contributing](#-contributing)
+- [Versioning](#-versioning)
+- [License](#-license)
+- [Author](#-author)
 
-## Deploy the sample application
+## 🚀 About the Project
 
-The Serverless Application Model Command Line Interface (SAM CLI) is an extension of the AWS CLI that adds functionality for building and testing Lambda applications. It uses Docker to run your functions in an Amazon Linux environment that matches Lambda. It can also emulate your application's build environment and API.
+**Serverless Chat** is a real-time chat application designed to demonstrate how a modern messaging system can be built using AWS managed and serverless services.
 
-To use the SAM CLI, you need the following tools.
+Instead of running a dedicated Node.js, Python, or Java chat server continuously, the application uses API Gateway WebSocket APIs, Lambda functions, and DynamoDB.
 
-* SAM CLI - [Install the SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
-* [Python 3 installed](https://www.python.org/downloads/)
-* Docker - [Install Docker community edition](https://hub.docker.com/search/?type=edition&offering=community)
+```text
+Browser
+   │
+   │ WebSocket
+   ▼
+Amazon API Gateway
+   │
+   ├── $connect
+   ├── $disconnect
+   ├── sendMessage
+   └── getMessages
+          │
+          ▼
+       AWS Lambda
+          │
+          ▼
+      DynamoDB
+```
 
-To build and deploy your application for the first time, run the following in your shell:
+The project demonstrates serverless architecture, WebSocket communication, event-driven backend development, AWS Lambda, DynamoDB, API Gateway WebSocket APIs, AWS SAM, CloudFormation, and room-based messaging.
+
+## ✨ Key Features
+
+### Current
+
+- ⚡ Real-time WebSocket messaging
+- 🏠 Room-aware connections
+- 💬 Room-specific message history
+- 📡 API Gateway WebSocket communication
+- ⚙️ AWS Lambda event-driven backend
+- 🗄️ DynamoDB persistence
+- 🔌 WebSocket connection management
+- 👤 Username-based chat identity
+- 🧑 User initials/avatar display
+- 💭 Message bubbles
+- 🕐 Message timestamps
+- 📜 Smart automatic scrolling
+- 💤 Empty-room state
+- 📱 Responsive mobile layout
+- ↩️ Back button / leave-chat flow
+- 🔄 Room switching
+- 🏗️ AWS SAM infrastructure deployment
+
+
+
+## 🏗️ Architecture
+
+```text
+┌───────────────────────────────────────────┐
+│                 Frontend                  │
+│        HTML + CSS + JavaScript            │
+└───────────────────┬───────────────────────┘
+                    │
+                    │ WebSocket
+                    ▼
+┌───────────────────────────────────────────┐
+│          Amazon API Gateway               │
+│             WebSocket API                 │
+│                                           │
+│ $connect │ $disconnect │ sendMessage      │
+│                    │ getMessages          │
+└───────────────────┬───────────────────────┘
+                    │
+                    ▼
+┌───────────────────────────────────────────┐
+│               AWS Lambda                  │
+│                                           │
+│ Connect │ Disconnect │ Send │ Get         │
+└───────────────────┬───────────────────────┘
+                    │
+                    ▼
+┌───────────────────────────────────────────┐
+│              Amazon DynamoDB              │
+│                                           │
+│ Connections Table │ Messages Table        │
+└───────────────────────────────────────────┘
+```
+
+### Message flow
+
+```text
+User
+  │
+  ▼
+WebSocket
+  │
+  ▼
+API Gateway
+  │
+  ▼
+SendMessage Lambda
+  │
+  ├── Store message → DynamoDB
+  │
+  └── Broadcast → connected clients
+```
+
+### Room-aware connections
+
+```text
+ConnectionsTable
+
+roomId       connectionId
+────────────────────────────
+general      connection-A
+general      connection-B
+development  connection-C
+```
+
+## 🛠️ Technology Stack
+
+| Technology | Purpose | Functionality |
+|---|---|---|
+| **Python** | Backend runtime | Lambda handlers and chat logic |
+| **AWS Lambda** | Serverless compute | Connect, disconnect, send-message, and history operations |
+| **Amazon API Gateway WebSocket API** | Real-time transport | WebSocket connections and route handling |
+| **Amazon DynamoDB** | NoSQL database | Messages and active connection records |
+| **AWS SAM** | Infrastructure/deployment | Defines, builds, and deploys the serverless application |
+| **AWS CloudFormation** | Infrastructure provisioning | Creates and updates AWS resources from the SAM template |
+| **Boto3** | AWS SDK for Python | DynamoDB and AWS API access from Lambda |
+| **HTML5** | Frontend structure | Chat interface |
+| **CSS3** | Frontend styling | Responsive UI, message bubbles, mobile layout |
+| **JavaScript** | Frontend logic | WebSocket communication, rooms, rendering, and UI state |
+| **WebSocket** | Communication protocol | Bidirectional real-time communication |
+| **Git** | Version control | Source-code history |
+| **GitHub** | Source hosting | Open-source repository |
+
+## 🔄 How It Works
+
+### 1. User joins a room
+
+The browser opens a WebSocket connection using the selected room:
+
+```text
+wss://<api-id>.execute-api.<region>.amazonaws.com/prod?roomId=general
+```
+
+API Gateway invokes the `$connect` Lambda.
+
+### 2. Connection is stored
+
+The connection is associated with the selected room in DynamoDB.
+
+### 3. Message history
+
+The frontend sends:
+
+```json
+{
+  "action": "getMessages",
+  "roomId": "general"
+}
+```
+
+The `get_messages` Lambda retrieves messages for that room.
+
+### 4. Send a message
+
+The frontend sends:
+
+```json
+{
+  "action": "sendMessage",
+  "roomId": "general",
+  "sender": "sender-username",
+  "message": "Hello!"
+}
+```
+
+The backend stores the message and broadcasts it to connected clients in the relevant room.
+
+### 5. Disconnect
+
+When a WebSocket closes, API Gateway invokes `$disconnect` and the backend removes the connection record.
+
+## 📁 Project Structure
+
+```text
+serverless-chat/
+│
+├── frontend/
+│   ├── index.html
+│   ├── style.css
+│   └── app.js
+│
+├── functions/
+│   ├── connect/
+│   │   └── app.py
+│   ├── disconnect/
+│   │   └── app.py
+│   ├── send_message/
+│   │   └── app.py
+│   └── get_messages/
+│       └── app.py
+│
+├── template.yaml
+├── samconfig.toml
+├── .gitignore
+└── README.md
+```
+
+### Lambda responsibilities
+
+- **connect:** registers a new WebSocket connection and room.
+- **disconnect:** removes a disconnected connection.
+- **send_message:** persists and broadcasts chat messages.
+- **get_messages:** retrieves stored room messages.
+- **frontend:** browser-based chat interface and WebSocket client.
+- **template.yaml:** AWS infrastructure definition.
+
+## 📋 Prerequisites
+
+Install:
+
+- Git
+- Python 3
+- AWS CLI
+- AWS SAM CLI
+- An AWS account
+
+Verify:
 
 ```bash
-sam build --use-container
+git --version
+python --version
+aws --version
+sam --version
+```
+
+Configure AWS credentials:
+
+```bash
+aws configure
+```
+
+The AWS identity used for deployment needs sufficient permissions for the resources defined in the SAM template, including CloudFormation, Lambda, API Gateway, DynamoDB, and IAM operations.
+
+## ⚙️ Installation and Setup
+
+### 1. Clone
+
+```bash
+git clone https://github.com/<abhijeet02323>/serverless-chat.git
+cd serverless-chat
+```
+
+### 2. Review configuration
+
+Infrastructure is defined in:
+
+```text
+template.yaml
+```
+
+Deployment settings are stored in:
+
+```text
+samconfig.toml
+```
+
+Adjust the region and deployment parameters for your AWS account if required.
+
+### 3. Build
+
+```bash
+sam build
+```
+
+Expected result:
+
+```text
+Build Succeeded
+```
+
+### 4. Validate
+
+```bash
+aws cloudformation validate-template   --template-body file://template.yaml   --region <your-region>
+```
+
+### 5. Deploy
+
+First deployment:
+
+```bash
 sam deploy --guided
 ```
 
-The first command will build the source of your application. The second command will package and deploy your application to AWS, with a series of prompts:
+Follow the prompts for stack name, region, stage, CloudFormation confirmation, and IAM permissions.
 
-* **Stack Name**: The name of the stack to deploy to CloudFormation. This should be unique to your account and region, and a good starting point would be something matching your project name.
-* **AWS Region**: The AWS region you want to deploy your app to.
-* **Confirm changes before deploy**: If set to yes, any change sets will be shown to you before execution for manual review. If set to no, the AWS SAM CLI will automatically deploy application changes.
-* **Allow SAM CLI IAM role creation**: Many AWS SAM templates, including this example, create AWS IAM roles required for the AWS Lambda function(s) included to access AWS services. By default, these are scoped down to minimum required permissions. To deploy an AWS CloudFormation stack which creates or modifies IAM roles, the `CAPABILITY_IAM` value for `capabilities` must be provided. If permission isn't provided through this prompt, to deploy this example you must explicitly pass `--capabilities CAPABILITY_IAM` to the `sam deploy` command.
-* **Save arguments to samconfig.toml**: If set to yes, your choices will be saved to a configuration file inside the project, so that in the future you can just re-run `sam deploy` without parameters to deploy changes to your application.
-
-You can find your API Gateway Endpoint URL in the output values displayed after deployment.
-
-## Use the SAM CLI to build and test locally
-
-Build your application with the `sam build --use-container` command.
+Later deployments:
 
 ```bash
-serverless-chat$ sam build --use-container
+sam deploy
 ```
 
-The SAM CLI installs dependencies defined in `hello_world/requirements.txt`, creates a deployment package, and saves it in the `.aws-sam/build` folder.
-
-Test a single function by invoking it directly with a test event. An event is a JSON document that represents the input that the function receives from the event source. Test events are included in the `events` folder in this project.
-
-Run functions locally and invoke them with the `sam local invoke` command.
+## 🌐 Running the Frontend Locally
 
 ```bash
-serverless-chat$ sam local invoke HelloWorldFunction --event events/event.json
+cd frontend
+python -m http.server 8080
 ```
 
-The SAM CLI can also emulate your application's API. Use the `sam local start-api` to run the API locally on port 3000.
+Open:
+
+```text
+http://localhost:8080
+```
+
+The frontend uses the WebSocket endpoint of the deployed API.
+
+> For your own deployment, configure the WebSocket endpoint in `frontend/app.js` for your deployed API and region.
+
+## 💬 Using the Application
+
+1. Enter a username.
+2. Select a room.
+3. Click **Join Chat**.
+4. Send messages using the input box.
+5. Open another browser/window to test real-time delivery.
+6. Join different rooms to test room isolation.
+7. Switch rooms using the room controls.
+8. Use the back button to leave the chat.
+
+Example:
+
+```text
+User A → general
+User B → general
+User C → development
+```
+
+A message sent to `general` should not be delivered to the user connected to `development`.
+
+## 🧪 Testing
+
+The current implementation has been manually tested end-to-end through the deployed AWS architecture.
+
+Tested:
+
+- [x] WebSocket connection
+- [x] Room connection
+- [x] Real-time message sending
+- [x] Real-time message receiving
+- [x] Message history
+- [x] Multiple connected clients
+- [x] Room isolation
+- [x] Room switching
+- [x] Disconnect flow
+- [x] Responsive frontend
+- [ ] Automated test suite — planned
+
+## 🆚 How This Differs From Traditional Chat Systems
+
+Traditional chat applications commonly use an always-running application server:
+
+```text
+Client
+  │
+  ▼
+Always-running server
+  │
+  └── Database
+```
+
+This project uses managed AWS services:
+
+```text
+Client
+  │
+  ▼
+API Gateway WebSocket
+  │
+  ▼
+Lambda
+  │
+  ▼
+DynamoDB
+```
+
+| Traditional approach | This project |
+|---|---|
+| Usually requires continuously running application servers | Uses managed/serverless AWS services |
+| Server capacity must be managed | AWS manages underlying infrastructure |
+| Application server handles WebSocket connections | API Gateway manages WebSocket connections |
+| Backend processes run continuously | Lambda runs in response to events |
+| More infrastructure to operate | Less infrastructure to manage |
+| Scaling requires more application infrastructure decisions | AWS provides managed scaling capabilities |
+
+> Serverless does not mean that physical servers do not exist. It means the cloud provider manages the underlying server infrastructure instead of the application team managing those servers directly.
+
+## 🔐 Security and Current Limitations
+
+This is currently an **MVP/learning and portfolio project**, not a production-hardened messaging platform.
+
+Current limitations:
+
+- Authentication is not implemented yet.
+- The frontend currently supplies the username.
+- Production authorization is still being improved.
+- Automatic WebSocket reconnection is planned.
+- Message pagination is planned.
+- Automated tests are planned.
+- Advanced rate limiting and abuse prevention are not yet implemented.
+- Production monitoring and alerting are not yet fully implemented.
+
+
+
+> **New versions are planned.** The roadmap may evolve as the project develops.
+
+## 🤝 Contributing
+
+This project is **open source**, and contributions are welcome.
+
+Contributions can include:
+
+- Bug fixes
+- UI/UX improvements
+- AWS architecture improvements
+- Performance improvements
+- Security improvements
+- Documentation
+- Automated tests
+- New chat features
+- Infrastructure improvements
+
+### Contribution workflow
+
+1. Fork the repository.
+2. Create a branch:
 
 ```bash
-serverless-chat$ sam local start-api
-serverless-chat$ curl http://localhost:3000/
+git checkout -b feature/your-feature
 ```
 
-The SAM CLI reads the application template to determine the API's routes and the functions that they invoke. The `Events` property on each function's definition includes the route and method for each path.
-
-```yaml
-      Events:
-        HelloWorld:
-          Type: Api
-          Properties:
-            Path: /hello
-            Method: get
-```
-
-## Add a resource to your application
-The application template uses AWS Serverless Application Model (AWS SAM) to define application resources. AWS SAM is an extension of AWS CloudFormation with a simpler syntax for configuring common serverless application resources such as functions, triggers, and APIs. For resources not included in [the SAM specification](https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md), you can use standard [AWS CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html) resource types.
-
-## Fetch, tail, and filter Lambda function logs
-
-To simplify troubleshooting, SAM CLI has a command called `sam logs`. `sam logs` lets you fetch logs generated by your deployed Lambda function from the command line. In addition to printing the logs on the terminal, this command has several nifty features to help you quickly find the bug.
-
-`NOTE`: This command works for all AWS Lambda functions; not just the ones you deploy using SAM.
+3. Make your changes.
+4. Test locally.
+5. Build:
 
 ```bash
-serverless-chat$ sam logs -n HelloWorldFunction --stack-name "serverless-chat" --tail
+sam build
 ```
 
-You can find more information and examples about filtering Lambda function logs in the [SAM CLI Documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-logging.html).
-
-## Tests
-
-Tests are defined in the `tests` folder in this project. Use PIP to install the test dependencies and run tests.
+6. Commit:
 
 ```bash
-serverless-chat$ pip install -r tests/requirements.txt --user
-# unit test
-serverless-chat$ python -m pytest tests/unit -v
-# integration test, requiring deploying the stack first.
-# Create the env variable AWS_SAM_STACK_NAME with the name of the stack we are testing
-serverless-chat$ AWS_SAM_STACK_NAME="serverless-chat" python -m pytest tests/integration -v
+git add .
+git commit -m "Add your feature"
 ```
 
-## Cleanup
-
-To delete the sample application that you created, use the AWS CLI. Assuming you used your project name for the stack name, you can run the following:
+7. Push:
 
 ```bash
-sam delete --stack-name "serverless-chat"
+git push origin feature/your-feature
 ```
 
-## Resources
+8. Open a Pull Request.
 
-See the [AWS SAM developer guide](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) for an introduction to SAM specification, the SAM CLI, and serverless application concepts.
+Please keep pull requests focused and describe the change clearly.
 
-Next, you can use AWS Serverless Application Repository to deploy ready to use Apps that go beyond hello world samples and learn how authors developed their applications: [AWS Serverless Application Repository main page](https://aws.amazon.com/serverless/serverlessrepo/)
+## 🔖 Versioning
+
+The project will use semantic versioning where practical:
+
+```text
+MAJOR.MINOR.PATCH
+```
+
+Examples:
+
+```text
+v1.0.0
+v1.1.0
+v1.1.1
+v2.0.0
+```
+
+Major versions may include architectural or API changes.
+
+## 💰 AWS Cost Considerations
+
+AWS services can incur charges depending on usage. The main services used by this project include:
+
+- Amazon API Gateway
+- AWS Lambda
+- Amazon DynamoDB
+- AWS CloudFormation
+- IAM and related infrastructure
+
+Review current AWS pricing before deploying. Remove unused development resources when they are no longer required.
+
+## 🧹 Removing the Deployment
+
+To remove a SAM-managed CloudFormation stack:
+
+```bash
+aws cloudformation delete-stack   --stack-name <stack-name>   --region <region>
+```
+
+> **Warning:** Deleting the stack can remove resources created by it, including DynamoDB resources and stored data, depending on resource policies. Review the CloudFormation configuration before deleting a production stack.
+
+## 📄 License
+
+This project is intended to be open source.
+
+Add a `LICENSE` file before publishing the repository. A permissive license such as **MIT** may be appropriate for an educational/open-source project, but the repository owner should select the license that matches the intended usage and contribution policy.
+
+## 👨‍💻 Author
+
+**Abhijeet Dwivedi**
+
+Computer Science undergraduate specializing in Artificial Intelligence & Data Science, with interests in:
+
+- Cloud Computing
+- AWS
+- Serverless Architecture
+- DevOps
+- Backend Engineering
+- Linux
+- Distributed Systems
+- AI & Data Science
+
+## ⭐ Support the Project
+
+If you find the project useful:
+
+- ⭐ Star the repository
+- 🍴 Fork the project
+- 🐛 Report issues
+- 💡 Suggest improvements
+- 🔧 Submit pull requests
+
+## 📌 Project Status
+
+**Active Development**
+
+The current version demonstrates a functional serverless real-time chat MVP. More features, security improvements, infrastructure optimizations, and production-oriented capabilities are planned for future releases.
+
+Built with ☁️ **AWS + ⚡ Serverless + WebSockets**
