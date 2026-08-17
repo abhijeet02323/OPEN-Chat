@@ -1,5 +1,5 @@
 const WS_BASE_URL =
-    "wss://2cjbu9asnh.execute-api.ap-south-1.amazonaws.com/prod";
+    "websocker_api";
 
 
 // ============================================
