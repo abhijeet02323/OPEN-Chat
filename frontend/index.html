@@ -30,7 +30,16 @@
                 Real-time messaging powered by AWS
             </p>
 
-            <form id="join-form">
+            <div class="auth-tabs" role="tablist" aria-label="Authentication">
+                <button id="login-tab" class="auth-tab active" type="button" role="tab" aria-selected="true">
+                    Log in
+                </button>
+                <button id="register-tab" class="auth-tab" type="button" role="tab" aria-selected="false">
+                    Register
+                </button>
+            </div>
+
+            <form id="login-form" class="auth-form">
 
                 <label for="username">
                     Username
@@ -44,18 +53,66 @@
                     required
                 >
 
-                <label for="room">
-                    Room
+                <label for="login-password">
+                    Password
                 </label>
 
-                <select id="room">
-                    <option value="general">General</option>
-                    <option value="development">Development</option>
-                    <option value="random">Random</option>
-                </select>
+                <input
+                    type="password"
+                    id="login-password"
+                    placeholder="Enter your password"
+                    minlength="8"
+                    required
+                >
 
                 <button type="submit">
                     Join Chat
+                </button>
+
+            </form>
+
+            <form id="register-form" class="auth-form hidden">
+
+                <label for="register-username">
+                    Username
+                </label>
+
+                <input
+                    type="text"
+                    id="register-username"
+                    placeholder="3–30 letters, numbers, - or _"
+                    minlength="3"
+                    maxlength="30"
+                    pattern="[A-Za-z0-9_-]+"
+                    required
+                >
+
+                <label for="register-password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="register-password"
+                    placeholder="At least 8 characters"
+                    minlength="8"
+                    required
+                >
+
+                <label for="confirm-password">
+                    Confirm password
+                </label>
+
+                <input
+                    type="password"
+                    id="confirm-password"
+                    placeholder="Enter your password again"
+                    minlength="8"
+                    required
+                >
+
+                <button type="submit">
+                    Create account
                 </button>
 
             </form>
@@ -104,6 +161,10 @@
                         # general
                     </span>
 
+                    <button id="logout-button" class="logout-button" type="button">
+                        Log out
+                    </button>
+
                 </div>
 
             </div>
@@ -139,6 +200,8 @@
 
                 </div>
 
+                <div id="room-list" class="room-list">
+
 
                 <button
                     class="room-button active"
@@ -166,6 +229,26 @@
                     <span>random</span>
                 </button>
 
+                </div>
+
+                <form id="new-room-form" class="new-room-form">
+                    <label class="sr-only" for="new-room-input">
+                        New room name
+                    </label>
+
+                    <input
+                        id="new-room-input"
+                        type="text"
+                        maxlength="50"
+                        placeholder="Create a room"
+                        autocomplete="off"
+                    >
+
+                    <button type="submit" aria-label="Create room">
+                        +
+                    </button>
+                </form>
+
             </aside>
 
 
@@ -187,6 +270,14 @@
                     id="typing-indicator"
                     class="typing-indicator"
                 ></div>
+
+                <button
+                    id="new-messages-button"
+                    class="new-messages-button hidden"
+                    type="button"
+                >
+                    ↓ New messages
+                </button>
 
 
                 <!-- Message Input -->

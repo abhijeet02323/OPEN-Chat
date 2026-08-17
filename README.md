@@ -75,6 +75,12 @@ The project demonstrates serverless architecture, WebSocket communication, event
 - 📱 Responsive mobile layout
 - ↩️ Back button / leave-chat flow
 - 🔄 Room switching
+- 🔁 Automatic WebSocket reconnection with exponential backoff
+- ➕ Create and join custom rooms from the sidebar
+- 📝 Per-room message drafts that survive room switches and reconnects
+- 🔔 New-message indicator when reading earlier messages
+- ♻️ Deduplicated history after reconnecting
+- 💾 Remembered username and last-selected room
 - 🏗️ AWS SAM infrastructure deployment
 
 
@@ -350,7 +356,7 @@ The frontend uses the WebSocket endpoint of the deployed API.
 ## 💬 Using the Application
 
 1. Enter a username.
-2. Select a room.
+2. Select a room, or create one from the chat sidebar after joining.
 3. Click **Join Chat**.
 4. Send messages using the input box.
 5. Open another browser/window to test real-time delivery.
@@ -434,7 +440,7 @@ Current limitations:
 - Authentication is not implemented yet.
 - The frontend currently supplies the username.
 - Production authorization is still being improved.
-- Automatic WebSocket reconnection is planned.
+- The client retries a dropped WebSocket connection up to five times with exponential backoff. It does not yet provide a manual retry control after those attempts are exhausted.
 - Message pagination is planned.
 - Automated tests are planned.
 - Advanced rate limiting and abuse prevention are not yet implemented.

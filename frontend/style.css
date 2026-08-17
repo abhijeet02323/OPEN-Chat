@@ -121,7 +121,7 @@ body {
 }
 
 
-#join-form {
+.auth-form {
 
     display: flex;
 
@@ -131,7 +131,7 @@ body {
 }
 
 
-#join-form label {
+.auth-form label {
 
     font-size: 14px;
 
@@ -141,8 +141,7 @@ body {
 }
 
 
-#join-form input,
-#join-form select {
+.auth-form input {
 
     width: 100%;
 
@@ -160,8 +159,7 @@ body {
 }
 
 
-#join-form input:focus,
-#join-form select:focus {
+.auth-form input:focus {
 
     border-color: #111827;
 
@@ -170,7 +168,7 @@ body {
 }
 
 
-#join-form button {
+.auth-form button {
 
     margin-top: 15px;
 
@@ -196,7 +194,7 @@ body {
 }
 
 
-#join-form button:hover {
+.auth-form button:hover {
 
     transform: translateY(-1px);
 }
@@ -209,6 +207,40 @@ body {
     font-size: 14px;
 
     margin-top: 12px;
+}
+
+.auth-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 18px;
+    padding: 4px;
+    border-radius: 10px;
+    background: #f3f4f6;
+}
+
+.auth-tab {
+    flex: 1;
+    padding: 9px;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: #6b7280;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.auth-tab.active {
+    background: white;
+    color: #111827;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.auth-form button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+    transform: none;
 }
 
 
@@ -303,6 +335,23 @@ body {
     font-size: 13px;
 
     color: #6b7280;
+}
+
+.logout-button {
+    display: block;
+    margin-top: 5px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #6b7280;
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.logout-button:hover {
+    color: #111827;
+    text-decoration: underline;
 }
 
 
@@ -417,6 +466,10 @@ body {
     background: #fafafa;
 }
 
+.room-list {
+    min-height: 1px;
+}
+
 
 .sidebar-header {
 
@@ -483,6 +536,46 @@ body {
     color: #111827;
 
     font-weight: 600;
+}
+
+.new-room-form {
+    display: flex;
+    gap: 6px;
+    margin: 14px 4px 0;
+    padding-top: 14px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.new-room-form input {
+    width: 100%;
+    min-width: 0;
+    padding: 9px 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: white;
+    font: inherit;
+    font-size: 13px;
+    outline: none;
+}
+
+.new-room-form input:focus {
+    border-color: #111827;
+    box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.08);
+}
+
+.new-room-form button {
+    width: 36px;
+    flex-shrink: 0;
+    border: 0;
+    border-radius: 8px;
+    background: #111827;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.new-room-form button:hover {
+    background: #374151;
 }
 
 
@@ -740,6 +833,33 @@ body {
     color: #9ca3af;
 
     font-size: 12px;
+}
+
+.new-messages-button {
+    align-self: center;
+    margin: 0 0 10px;
+    padding: 7px 12px;
+    border: 0;
+    border-radius: 999px;
+    background: #111827;
+    color: white;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    box-shadow: 0 6px 18px rgba(17, 24, 39, 0.2);
+    cursor: pointer;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
 
 
