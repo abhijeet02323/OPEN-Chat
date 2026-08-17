@@ -1,4 +1,73 @@
-<!-- ============================= -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Serverless Chat</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ============================= -->
+    <!-- Join Screen                    -->
+    <!-- ============================= -->
+
+    <section id="join-screen" class="screen">
+
+        <div class="join-card">
+
+            <div class="logo">
+                ⚡
+            </div>
+
+            <h1>Serverless Chat</h1>
+
+            <p class="subtitle">
+                Real-time messaging powered by AWS
+            </p>
+
+            <form id="join-form">
+
+                <label for="username">
+                    Username
+                </label>
+
+                <input
+                    type="text"
+                    id="username"
+                    placeholder="Enter your username"
+                    maxlength="100"
+                    required
+                >
+
+                <label for="room">
+                    Room
+                </label>
+
+                <select id="room">
+                    <option value="general">General</option>
+                    <option value="development">Development</option>
+                    <option value="random">Random</option>
+                </select>
+
+                <button type="submit">
+                    Join Chat
+                </button>
+
+            </form>
+
+            <div id="join-error" class="error"></div>
+
+        </div>
+
+    </section>
+
+
+   <!-- ============================= -->
 <!-- Chat Screen                   -->
 <!-- ============================= -->
 
