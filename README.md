@@ -4,13 +4,13 @@ A real-time messaging application built using a **serverless AWS architecture**.
 
 The frontend is a lightweight **HTML, CSS, and JavaScript** application that connects directly to the AWS WebSocket endpoint.
 
-> **Project status:** Working MVP with room-aware real-time messaging, message history, responsive chat UI, and AWS SAM-based infrastructure deployment. Authentication, advanced presence features, pagination, and additional production hardening are planned for upcoming versions.
+> **Project status:** Working MVP with room-aware real-time messaging, message history, responsive chat UI, and AWS SAM-based infrastructure deployment.New Planned versions are in production.
 
 ## 📌 Table of Contents
 
 - [About the Project](#-about-the-project)
-- [Architecture](#-architecture)
 - [Key Features](#-key-features)
+- [Architecture](#-architecture)
 - [Technology Stack](#-technology-stack)
 - [How It Works](#-how-it-works)
 - [Project Structure](#-project-structure)
@@ -21,10 +21,7 @@ The frontend is a lightweight **HTML, CSS, and JavaScript** application that con
 - [Using the Application](#-using-the-application)
 - [Testing](#-testing)
 - [How This Differs From Traditional Chat Systems](#-how-this-differs-from-traditional-chat-systems)
-- [Security and Current Limitations](#-security-and-current-limitations)
-- [Roadmap](#-roadmap)
 - [Contributing](#-contributing)
-- [Versioning](#-versioning)
 - [License](#-license)
 - [Author](#-author)
 
