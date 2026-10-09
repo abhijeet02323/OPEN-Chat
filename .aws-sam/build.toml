@@ -36,4 +36,22 @@ manifest_hash = ""
 packagetype = "Zip"
 functions = ["GetMessagesFunction"]
 
+[function_build_definitions.ea7e93cb-231c-4255-a2bf-a58ec7a290f5]
+codeuri = "/home/abhi/Projects/serverless-chat/functions/auth_register"
+runtime = "python3.14"
+architecture = "x86_64"
+handler = "app.lambda_handler"
+manifest_hash = "bac8e50a87f94eea25c362e45b28d921"
+packagetype = "Zip"
+functions = ["RegisterFunction"]
+
+[function_build_definitions.4014b2f9-c046-49a6-9b74-deddc6d2dc38]
+codeuri = "/home/abhi/Projects/serverless-chat/functions/auth_login"
+runtime = "python3.14"
+architecture = "x86_64"
+handler = "app.lambda_handler"
+manifest_hash = "bac8e50a87f94eea25c362e45b28d921"
+packagetype = "Zip"
+functions = ["LoginFunction"]
+
 [layer_build_definitions]

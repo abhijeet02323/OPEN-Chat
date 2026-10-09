@@ -1,0 +1,200 @@
+2026-08-18 01:54:56,516 | Config file location: /home/abhi/Projects/serverless-chat/samconfig.toml
+2026-08-18 01:54:56,516 | Loading configuration values from [default.['deploy'].parameters] (env.command_name.section) in config file at '/home/abhi/Projects/serverless-chat/samconfig.toml'...
+2026-08-18 01:54:56,516 | Configuration values successfully loaded.
+2026-08-18 01:54:56,516 | Configuration values are: {'stack_name': 'serverless-chat', 'region': 'ap-south-1', 'capabilities': 'CAPABILITY_IAM', 'confirm_changeset': True, 'resolve_s3': True, 's3_prefix': 'serverless-chat', 'parameter_overrides': 'StageName="prod"', 'image_repositories': []}
+2026-08-18 01:54:56,531 | Using SAM Template at /home/abhi/Projects/serverless-chat/.aws-sam/build/template.yaml
+2026-08-18 01:54:56,544 | Input parameters: StageName="prod"
+2026-08-18 01:54:56,544 | Flattened parameters: ['StageName="prod"']
+2026-08-18 01:54:56,544 | Converted 1 parameters: {'StageName': 'prod'}
+2026-08-18 01:54:56,572 | Using config file: samconfig.toml, config environment: default
+2026-08-18 01:54:56,572 | Expand command line arguments to:
+2026-08-18 01:54:56,572 | --template_file=/home/abhi/Projects/serverless-chat/.aws-sam/build/template.yaml --fail_on_empty_changeset --confirm_changeset --on_failure=ROLLBACK --max_wait_duration=60 --stack_name=serverless-chat --s3_prefix=serverless-chat --resolve_s3 --parameter_overrides={'StageName': 'prod'} --capabilities=['CAPABILITY_IAM'] 
+
+	Managed S3 bucket: aws-sam-cli-managed-default-samclisourcebucket-3nefuhtql0h4
+	Auto resolution of buckets can be turned off by setting resolve_s3=False
+	To use a specific S3 bucket, set --s3-bucket=<bucket_name>
+	Above settings can be stored in samconfig.toml
+2026-08-18 01:54:58,661 | Collected default values for parameters: {'StageName': 'prod'}
+2026-08-18 01:54:58,677 | There is no customer defined id or cdk path defined for resource ConnectionsTable, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,677 | There is no customer defined id or cdk path defined for resource MessagesTable, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,677 | There is no customer defined id or cdk path defined for resource ChatWebSocketApi, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,677 | There is no customer defined id or cdk path defined for resource AuthApi, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,677 | Sam customer defined id is more priority than other IDs. Customer defined id for resource RegisterFunction is RegisterFunction
+2026-08-18 01:54:58,677 | Sam customer defined id is more priority than other IDs. Customer defined id for resource LoginFunction is LoginFunction
+2026-08-18 01:54:58,677 | Sam customer defined id is more priority than other IDs. Customer defined id for resource ConnectFunction is ConnectFunction
+2026-08-18 01:54:58,677 | Sam customer defined id is more priority than other IDs. Customer defined id for resource DisconnectFunction is DisconnectFunction
+2026-08-18 01:54:58,677 | Sam customer defined id is more priority than other IDs. Customer defined id for resource SendMessageFunction is SendMessageFunction
+2026-08-18 01:54:58,677 | Sam customer defined id is more priority than other IDs. Customer defined id for resource GetMessagesFunction is GetMessagesFunction
+2026-08-18 01:54:58,677 | There is no customer defined id or cdk path defined for resource ConnectIntegration, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,677 | There is no customer defined id or cdk path defined for resource DisconnectIntegration, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,677 | There is no customer defined id or cdk path defined for resource SendMessageIntegration, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,677 | There is no customer defined id or cdk path defined for resource GetMessagesIntegration, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,677 | There is no customer defined id or cdk path defined for resource ConnectRoute, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,677 | There is no customer defined id or cdk path defined for resource DisconnectRoute, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,677 | There is no customer defined id or cdk path defined for resource SendMessageRoute, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,677 | There is no customer defined id or cdk path defined for resource GetMessagesRoute, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,677 | There is no customer defined id or cdk path defined for resource ChatDeployment, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,677 | There is no customer defined id or cdk path defined for resource ChatStage, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,677 | There is no customer defined id or cdk path defined for resource ConnectPermission, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,677 | There is no customer defined id or cdk path defined for resource DisconnectPermission, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,677 | There is no customer defined id or cdk path defined for resource SendMessagePermission, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,677 | There is no customer defined id or cdk path defined for resource GetMessagesPermission, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,679 | 0 stacks found in the template
+2026-08-18 01:54:58,679 | Collected default values for parameters: {'StageName': 'prod'}
+2026-08-18 01:54:58,690 | There is no customer defined id or cdk path defined for resource ConnectionsTable, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,690 | There is no customer defined id or cdk path defined for resource MessagesTable, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,690 | There is no customer defined id or cdk path defined for resource ChatWebSocketApi, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,690 | There is no customer defined id or cdk path defined for resource AuthApi, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,690 | Sam customer defined id is more priority than other IDs. Customer defined id for resource RegisterFunction is RegisterFunction
+2026-08-18 01:54:58,690 | Sam customer defined id is more priority than other IDs. Customer defined id for resource LoginFunction is LoginFunction
+2026-08-18 01:54:58,690 | Sam customer defined id is more priority than other IDs. Customer defined id for resource ConnectFunction is ConnectFunction
+2026-08-18 01:54:58,690 | Sam customer defined id is more priority than other IDs. Customer defined id for resource DisconnectFunction is DisconnectFunction
+2026-08-18 01:54:58,690 | Sam customer defined id is more priority than other IDs. Customer defined id for resource SendMessageFunction is SendMessageFunction
+2026-08-18 01:54:58,690 | Sam customer defined id is more priority than other IDs. Customer defined id for resource GetMessagesFunction is GetMessagesFunction
+2026-08-18 01:54:58,690 | There is no customer defined id or cdk path defined for resource ConnectIntegration, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,690 | There is no customer defined id or cdk path defined for resource DisconnectIntegration, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,690 | There is no customer defined id or cdk path defined for resource SendMessageIntegration, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,690 | There is no customer defined id or cdk path defined for resource GetMessagesIntegration, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,691 | There is no customer defined id or cdk path defined for resource ConnectRoute, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,691 | There is no customer defined id or cdk path defined for resource DisconnectRoute, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,691 | There is no customer defined id or cdk path defined for resource SendMessageRoute, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,691 | There is no customer defined id or cdk path defined for resource GetMessagesRoute, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,691 | There is no customer defined id or cdk path defined for resource ChatDeployment, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,691 | There is no customer defined id or cdk path defined for resource ChatStage, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,691 | There is no customer defined id or cdk path defined for resource ConnectPermission, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,691 | There is no customer defined id or cdk path defined for resource DisconnectPermission, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,691 | There is no customer defined id or cdk path defined for resource SendMessagePermission, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,691 | There is no customer defined id or cdk path defined for resource GetMessagesPermission, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,731 | There is no customer defined id or cdk path defined for resource ConnectionsTable, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,731 | There is no customer defined id or cdk path defined for resource MessagesTable, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,731 | There is no customer defined id or cdk path defined for resource ChatWebSocketApi, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,731 | There is no customer defined id or cdk path defined for resource AuthApi, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,731 | Sam customer defined id is more priority than other IDs. Customer defined id for resource RegisterFunction is RegisterFunction
+2026-08-18 01:54:58,731 | Sam customer defined id is more priority than other IDs. Customer defined id for resource LoginFunction is LoginFunction
+2026-08-18 01:54:58,731 | Sam customer defined id is more priority than other IDs. Customer defined id for resource ConnectFunction is ConnectFunction
+2026-08-18 01:54:58,731 | Sam customer defined id is more priority than other IDs. Customer defined id for resource DisconnectFunction is DisconnectFunction
+2026-08-18 01:54:58,731 | Sam customer defined id is more priority than other IDs. Customer defined id for resource SendMessageFunction is SendMessageFunction
+2026-08-18 01:54:58,731 | Sam customer defined id is more priority than other IDs. Customer defined id for resource GetMessagesFunction is GetMessagesFunction
+2026-08-18 01:54:58,731 | There is no customer defined id or cdk path defined for resource ConnectIntegration, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,731 | There is no customer defined id or cdk path defined for resource DisconnectIntegration, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,731 | There is no customer defined id or cdk path defined for resource SendMessageIntegration, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,731 | There is no customer defined id or cdk path defined for resource GetMessagesIntegration, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,731 | There is no customer defined id or cdk path defined for resource ConnectRoute, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,731 | There is no customer defined id or cdk path defined for resource DisconnectRoute, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,732 | There is no customer defined id or cdk path defined for resource SendMessageRoute, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,732 | There is no customer defined id or cdk path defined for resource GetMessagesRoute, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,732 | There is no customer defined id or cdk path defined for resource ChatDeployment, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,732 | There is no customer defined id or cdk path defined for resource ChatStage, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,732 | There is no customer defined id or cdk path defined for resource ConnectPermission, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,732 | There is no customer defined id or cdk path defined for resource DisconnectPermission, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,732 | There is no customer defined id or cdk path defined for resource SendMessagePermission, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,732 | There is no customer defined id or cdk path defined for resource GetMessagesPermission, so we will use the resource logical id as the resource id
+2026-08-18 01:54:58,732 | Sam customer defined id is more priority than other IDs. Customer defined id for resource ConnectionsTable is ConnectionsTable
+2026-08-18 01:54:58,732 | Sam customer defined id is more priority than other IDs. Customer defined id for resource MessagesTable is MessagesTable
+2026-08-18 01:54:58,732 | Sam customer defined id is more priority than other IDs. Customer defined id for resource ChatWebSocketApi is ChatWebSocketApi
+2026-08-18 01:54:58,732 | Sam customer defined id is more priority than other IDs. Customer defined id for resource AuthApi is AuthApi
+2026-08-18 01:54:58,732 | Sam customer defined id is more priority than other IDs. Customer defined id for resource RegisterFunction is RegisterFunction
+	Uploading to serverless-chat/6e7485e57d769bae66ef5bab8b0ab501  1048576 / 1304413  (80.39%)	Uploading to serverless-chat/6e7485e57d769bae66ef5bab8b0ab501  1304413 / 1304413  (100.00%)
+2026-08-18 01:55:03,247 | Sam customer defined id is more priority than other IDs. Customer defined id for resource LoginFunction is LoginFunction
+	Uploading to serverless-chat/fd800a896edc324beed4b3831a21254a  1048576 / 1304140  (80.40%)	Uploading to serverless-chat/fd800a896edc324beed4b3831a21254a  1304140 / 1304140  (100.00%)
+2026-08-18 01:55:05,110 | Sam customer defined id is more priority than other IDs. Customer defined id for resource ConnectFunction is ConnectFunction
+	Uploading to serverless-chat/88ec7e9de4616b77f5bedd12551e7517  778 / 778  (100.00%)
+2026-08-18 01:55:05,733 | Sam customer defined id is more priority than other IDs. Customer defined id for resource DisconnectFunction is DisconnectFunction
+2026-08-18 01:55:06,056 | 
+	File with same data already exists at serverless-chat/c05410e96382d67a0b08b31d3e7f3567, skipping upload
+2026-08-18 01:55:06,056 | Sam customer defined id is more priority than other IDs. Customer defined id for resource SendMessageFunction is SendMessageFunction
+	Uploading to serverless-chat/71d0d1c7186606aaf4c3e69338df29d1  1156 / 1156  (100.00%)
+2026-08-18 01:55:06,539 | Sam customer defined id is more priority than other IDs. Customer defined id for resource GetMessagesFunction is GetMessagesFunction
+	Uploading to serverless-chat/19d756a3fbd6d54f56883a1adf1a00b1  708 / 708  (100.00%)
+2026-08-18 01:55:07,344 | Sam customer defined id is more priority than other IDs. Customer defined id for resource ConnectIntegration is ConnectIntegration
+2026-08-18 01:55:07,344 | Sam customer defined id is more priority than other IDs. Customer defined id for resource DisconnectIntegration is DisconnectIntegration
+2026-08-18 01:55:07,344 | Sam customer defined id is more priority than other IDs. Customer defined id for resource SendMessageIntegration is SendMessageIntegration
+2026-08-18 01:55:07,344 | Sam customer defined id is more priority than other IDs. Customer defined id for resource GetMessagesIntegration is GetMessagesIntegration
+2026-08-18 01:55:07,345 | Sam customer defined id is more priority than other IDs. Customer defined id for resource ConnectRoute is ConnectRoute
+2026-08-18 01:55:07,345 | Sam customer defined id is more priority than other IDs. Customer defined id for resource DisconnectRoute is DisconnectRoute
+2026-08-18 01:55:07,345 | Sam customer defined id is more priority than other IDs. Customer defined id for resource SendMessageRoute is SendMessageRoute
+2026-08-18 01:55:07,345 | Sam customer defined id is more priority than other IDs. Customer defined id for resource GetMessagesRoute is GetMessagesRoute
+2026-08-18 01:55:07,345 | Sam customer defined id is more priority than other IDs. Customer defined id for resource ChatDeployment is ChatDeployment
+2026-08-18 01:55:07,345 | Sam customer defined id is more priority than other IDs. Customer defined id for resource ChatStage is ChatStage
+2026-08-18 01:55:07,345 | Sam customer defined id is more priority than other IDs. Customer defined id for resource ConnectPermission is ConnectPermission
+2026-08-18 01:55:07,345 | Sam customer defined id is more priority than other IDs. Customer defined id for resource DisconnectPermission is DisconnectPermission
+2026-08-18 01:55:07,345 | Sam customer defined id is more priority than other IDs. Customer defined id for resource SendMessagePermission is SendMessagePermission
+2026-08-18 01:55:07,345 | Sam customer defined id is more priority than other IDs. Customer defined id for resource GetMessagesPermission is GetMessagesPermission
+
+	Deploying with following values
+	===============================
+	Stack name                   : serverless-chat
+	Region                       : ap-south-1
+	Confirm changeset            : True
+	Disable rollback             : False
+	Deployment s3 bucket         : aws-sam-cli-managed-default-samclisourcebucket-3nefuhtql0h4
+	Capabilities                 : ["CAPABILITY_IAM"]
+	Parameter overrides          : {"StageName": "prod"}
+	Signing Profiles             : {}
+
+Initiating deployment
+=====================
+
+2026-08-18 01:55:07,389 | Collected default values for parameters: {'StageName': 'prod'}
+2026-08-18 01:55:07,401 | Sam customer defined id is more priority than other IDs. Customer defined id for resource ConnectionsTable is ConnectionsTable
+2026-08-18 01:55:07,401 | Sam customer defined id is more priority than other IDs. Customer defined id for resource MessagesTable is MessagesTable
+2026-08-18 01:55:07,401 | Sam customer defined id is more priority than other IDs. Customer defined id for resource ChatWebSocketApi is ChatWebSocketApi
+2026-08-18 01:55:07,401 | Sam customer defined id is more priority than other IDs. Customer defined id for resource AuthApi is AuthApi
+2026-08-18 01:55:07,401 | Sam customer defined id is more priority than other IDs. Customer defined id for resource RegisterFunction is RegisterFunction
+2026-08-18 01:55:07,401 | Sam customer defined id is more priority than other IDs. Customer defined id for resource LoginFunction is LoginFunction
+2026-08-18 01:55:07,401 | Sam customer defined id is more priority than other IDs. Customer defined id for resource ConnectFunction is ConnectFunction
+2026-08-18 01:55:07,401 | Sam customer defined id is more priority than other IDs. Customer defined id for resource DisconnectFunction is DisconnectFunction
+2026-08-18 01:55:07,401 | Sam customer defined id is more priority than other IDs. Customer defined id for resource SendMessageFunction is SendMessageFunction
+2026-08-18 01:55:07,401 | Sam customer defined id is more priority than other IDs. Customer defined id for resource GetMessagesFunction is GetMessagesFunction
+2026-08-18 01:55:07,401 | Sam customer defined id is more priority than other IDs. Customer defined id for resource ConnectIntegration is ConnectIntegration
+2026-08-18 01:55:07,401 | Sam customer defined id is more priority than other IDs. Customer defined id for resource DisconnectIntegration is DisconnectIntegration
+2026-08-18 01:55:07,401 | Sam customer defined id is more priority than other IDs. Customer defined id for resource SendMessageIntegration is SendMessageIntegration
+2026-08-18 01:55:07,401 | Sam customer defined id is more priority than other IDs. Customer defined id for resource GetMessagesIntegration is GetMessagesIntegration
+2026-08-18 01:55:07,401 | Sam customer defined id is more priority than other IDs. Customer defined id for resource ConnectRoute is ConnectRoute
+2026-08-18 01:55:07,401 | Sam customer defined id is more priority than other IDs. Customer defined id for resource DisconnectRoute is DisconnectRoute
+2026-08-18 01:55:07,401 | Sam customer defined id is more priority than other IDs. Customer defined id for resource SendMessageRoute is SendMessageRoute
+2026-08-18 01:55:07,401 | Sam customer defined id is more priority than other IDs. Customer defined id for resource GetMessagesRoute is GetMessagesRoute
+2026-08-18 01:55:07,401 | Sam customer defined id is more priority than other IDs. Customer defined id for resource ChatDeployment is ChatDeployment
+2026-08-18 01:55:07,401 | Sam customer defined id is more priority than other IDs. Customer defined id for resource ChatStage is ChatStage
+2026-08-18 01:55:07,401 | Sam customer defined id is more priority than other IDs. Customer defined id for resource ConnectPermission is ConnectPermission
+2026-08-18 01:55:07,401 | Sam customer defined id is more priority than other IDs. Customer defined id for resource DisconnectPermission is DisconnectPermission
+2026-08-18 01:55:07,401 | Sam customer defined id is more priority than other IDs. Customer defined id for resource SendMessagePermission is SendMessagePermission
+2026-08-18 01:55:07,401 | Sam customer defined id is more priority than other IDs. Customer defined id for resource GetMessagesPermission is GetMessagesPermission
+2026-08-18 01:55:07,402 | 0 stacks found in the template
+2026-08-18 01:55:07,402 | Collected default values for parameters: {'StageName': 'prod'}
+2026-08-18 01:55:07,414 | Sam customer defined id is more priority than other IDs. Customer defined id for resource ConnectionsTable is ConnectionsTable
+2026-08-18 01:55:07,414 | Sam customer defined id is more priority than other IDs. Customer defined id for resource MessagesTable is MessagesTable
+2026-08-18 01:55:07,414 | Sam customer defined id is more priority than other IDs. Customer defined id for resource ChatWebSocketApi is ChatWebSocketApi
+2026-08-18 01:55:07,414 | Sam customer defined id is more priority than other IDs. Customer defined id for resource AuthApi is AuthApi
+2026-08-18 01:55:07,414 | Sam customer defined id is more priority than other IDs. Customer defined id for resource RegisterFunction is RegisterFunction
+2026-08-18 01:55:07,414 | Sam customer defined id is more priority than other IDs. Customer defined id for resource LoginFunction is LoginFunction
+2026-08-18 01:55:07,414 | Sam customer defined id is more priority than other IDs. Customer defined id for resource ConnectFunction is ConnectFunction
+2026-08-18 01:55:07,414 | Sam customer defined id is more priority than other IDs. Customer defined id for resource DisconnectFunction is DisconnectFunction
+2026-08-18 01:55:07,414 | Sam customer defined id is more priority than other IDs. Customer defined id for resource SendMessageFunction is SendMessageFunction
+2026-08-18 01:55:07,414 | Sam customer defined id is more priority than other IDs. Customer defined id for resource GetMessagesFunction is GetMessagesFunction
+2026-08-18 01:55:07,414 | Sam customer defined id is more priority than other IDs. Customer defined id for resource ConnectIntegration is ConnectIntegration
+2026-08-18 01:55:07,414 | Sam customer defined id is more priority than other IDs. Customer defined id for resource DisconnectIntegration is DisconnectIntegration
+2026-08-18 01:55:07,414 | Sam customer defined id is more priority than other IDs. Customer defined id for resource SendMessageIntegration is SendMessageIntegration
+2026-08-18 01:55:07,414 | Sam customer defined id is more priority than other IDs. Customer defined id for resource GetMessagesIntegration is GetMessagesIntegration
+2026-08-18 01:55:07,414 | Sam customer defined id is more priority than other IDs. Customer defined id for resource ConnectRoute is ConnectRoute
+2026-08-18 01:55:07,414 | Sam customer defined id is more priority than other IDs. Customer defined id for resource DisconnectRoute is DisconnectRoute
+2026-08-18 01:55:07,414 | Sam customer defined id is more priority than other IDs. Customer defined id for resource SendMessageRoute is SendMessageRoute
+2026-08-18 01:55:07,414 | Sam customer defined id is more priority than other IDs. Customer defined id for resource GetMessagesRoute is GetMessagesRoute
+2026-08-18 01:55:07,414 | Sam customer defined id is more priority than other IDs. Customer defined id for resource ChatDeployment is ChatDeployment
+2026-08-18 01:55:07,414 | Sam customer defined id is more priority than other IDs. Customer defined id for resource ChatStage is ChatStage
+2026-08-18 01:55:07,414 | Sam customer defined id is more priority than other IDs. Customer defined id for resource ConnectPermission is ConnectPermission
+2026-08-18 01:55:07,414 | Sam customer defined id is more priority than other IDs. Customer defined id for resource DisconnectPermission is DisconnectPermission
+2026-08-18 01:55:07,414 | Sam customer defined id is more priority than other IDs. Customer defined id for resource SendMessagePermission is SendMessagePermission
+2026-08-18 01:55:07,414 | Sam customer defined id is more priority than other IDs. Customer defined id for resource GetMessagesPermission is GetMessagesPermission
+2026-08-18 01:55:07,416 | 24 resources found in the stack 
+	Uploading to serverless-chat/6020f2592537462256051d9907858e22.template  12278 / 12278  (100.00%)
+2026-08-18 01:55:10,305 | Telemetry endpoint configured to be https://aws-serverless-tools-telemetry.us-west-2.amazonaws.com/metrics
+2026-08-18 01:55:10,316 | No container socket path in global storage, falling back to DOCKER_HOST detection: 
+2026-08-18 01:55:10,316 | Telemetry endpoint configured to be https://aws-serverless-tools-telemetry.us-west-2.amazonaws.com/metrics
+2026-08-18 01:55:10,316 | Unable to find Click Context for getting session_id.
+2026-08-18 01:55:10,317 | No container socket path in global storage, falling back to DOCKER_HOST detection: 
+2026-08-18 01:55:10,317 | Sending Telemetry: {'metrics': [{'commandRun': {'requestId': 'f27477e0-d6a6-443e-afb3-404619531c13', 'installationId': '9a175dd9-17b5-4a42-bcd3-7f5c731acd24', 'sessionId': 'dbb2a5a4-f6b2-4e10-82e0-a6663cefa2e8', 'executionEnvironment': 'CLI', 'ci': False, 'pyversion': '3.11.15', 'samcliVersion': '1.165.0', 'osPlatform': 'Linux', 'awsProfileProvided': False, 'debugFlagProvided': True, 'region': 'ap-south-1', 'commandName': 'sam deploy', 'metricSpecificAttributes': {'projectType': 'CFN', 'gitOrigin': None, 'projectName': '0e9fe7c30efc537cbee9cf6290d13854a8c7920c077924b1782a5e8cd95e5af3', 'initialCommit': None, 'containerEngine': 'docker-default', 'adminContainerPreference': None}, 'duration': 13733, 'exitReason': 'ChangeSetError', 'exitCode': 1}}]}
+2026-08-18 01:55:10,317 | Sending Telemetry: {'metrics': [{'events': {'requestId': '4964d304-5465-4992-8ab2-02813f6bcfe2', 'installationId': '9a175dd9-17b5-4a42-bcd3-7f5c731acd24', 'sessionId': 'dbb2a5a4-f6b2-4e10-82e0-a6663cefa2e8', 'executionEnvironment': 'CLI', 'ci': False, 'pyversion': '3.11.15', 'samcliVersion': '1.165.0', 'osPlatform': 'Linux', 'commandName': 'sam deploy', 'metricSpecificAttributes': {'events': [{'event_name': 'SamConfigFileExtension', 'event_value': '.toml', 'thread_id': '7de5d73c6dcd493c87b8259aa2142cc0', 'time_stamp': '2026-08-17 20:24:56.516399+00', 'exception_name': None}, {'event_name': 'SamConfigFileExtension', 'event_value': '.toml', 'thread_id': '9da1e49b50c24e459333733feca71433', 'time_stamp': '2026-08-17 20:24:56.559674+00', 'exception_name': None}], 'containerEngine': 'docker-default'}}}]}
+2026-08-18 01:55:11,965 | HTTPSConnectionPool(host='aws-serverless-tools-telemetry.us-west-2.amazonaws.com', port=443): Read timed out. (read timeout=0.1)
+Error: Failed to create changeset for the stack: serverless-chat, An error occurred (ValidationError) when calling the CreateChangeSet operation: Parameters: [MongoDbUri, AuthTokenSecret] must have values
+2026-08-18 01:55:12,146 | HTTPSConnectionPool(host='aws-serverless-tools-telemetry.us-west-2.amazonaws.com', port=443): Read timed out. (read timeout=0.1)

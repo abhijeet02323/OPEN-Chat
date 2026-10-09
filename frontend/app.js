@@ -3,7 +3,7 @@ const WS_BASE_URL =
     "wss://2cjbu9asnh.execute-api.ap-south-1.amazonaws.com/prod";
 
 // Replace this with the AuthApiURL output from your SAM deployment.
-const AUTH_API_BASE_URL = "https://YOUR_AUTH_API_ID.execute-api.YOUR_REGION.amazonaws.com";
+const AUTH_API_BASE_URL = "https://706ib0ell4.execute-api.ap-south-1.amazonaws.com";
 
 const DEFAULT_ROOMS = ["general", "development", "random"];
 const MAX_RECONNECT_ATTEMPTS = 5;
