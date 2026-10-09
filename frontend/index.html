@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Serverless Chat</title>
+    <title>OPEN-chat</title>
 
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="auth.css">
@@ -13,124 +13,73 @@
 
 <body>
 
-    <!-- ============================= -->
-    <!-- Join Screen                    -->
-    <!-- ============================= -->
-
-    <section id="join-screen" class="screen">
-
-        <div class="join-card">
-
-            <div class="logo">
-                ⚡
-            </div>
-
-            <h1>Serverless Chat</h1>
-
-            <p class="subtitle">
-                Real-time messaging powered by AWS
-            </p>
-
+    <!-- Cognito Authentication Screen -->
+    <section id="auth-screen" class="screen auth-screen">
+        <div class="auth-card">
+            <div class="auth-brand-mark" aria-hidden="true">⚡</div>
+            <p class="auth-eyebrow">OPEN-chat</p>
+            <h1>Good conversations start here.</h1>
+            <p class="auth-subtitle">Sign in or create an account to join your chat rooms.</p>
             <div class="auth-tabs" role="tablist" aria-label="Authentication">
-                <button id="login-tab" class="auth-tab active" type="button" role="tab" aria-selected="true">
-                    Log in
-                </button>
-                <button id="register-tab" class="auth-tab" type="button" role="tab" aria-selected="false">
-                    Register
-                </button>
+                <button type="button" data-auth-mode="signin" class="active" role="tab" aria-selected="true">Sign in</button>
+                <button type="button" data-auth-mode="signup" role="tab" aria-selected="false">Create account</button>
             </div>
-
-            <form id="login-form" class="auth-form">
-
-                <label for="username">
-                    Username
-                </label>
-
-                <input
-                    type="text"
-                    id="username"
-                    placeholder="Enter your username"
-                    maxlength="100"
-                    autocomplete="username"
-                    required
-                >
-
-                <label for="login-password">
-                    Password
-                </label>
-
-                <input
-                    type="password"
-                    id="login-password"
-                    placeholder="Enter your password"
-                    minlength="8"
-                    autocomplete="current-password"
-                    required
-                >
-
-                <button type="submit">
-                    Join Chat
-                </button>
-
+            <form id="signin-form" data-auth-form="signin">
+                <label for="signin-email">Email</label>
+                <input id="signin-email" type="email" autocomplete="username" required placeholder="you@example.com">
+                <label for="signin-password">Password</label>
+                <input id="signin-password" type="password" autocomplete="current-password" required placeholder="Your password">
+                <button class="auth-primary" type="submit">Sign in</button>
+                <button class="auth-link" id="forgot-password" type="button">Forgot password?</button>
             </form>
-
-            <form id="register-form" class="auth-form hidden">
-
-                <label for="register-username">
-                    Username
-                </label>
-
-                <input
-                    type="text"
-                    id="register-username"
-                    placeholder="3–30 letters, numbers, - or _"
-                    minlength="3"
-                    maxlength="30"
-                    pattern="[A-Za-z0-9_-]+"
-                    autocomplete="username"
-                    required
-                >
-
-                <label for="register-password">
-                    Password
-                </label>
-
-                <input
-                    type="password"
-                    id="register-password"
-                    placeholder="At least 8 characters"
-                    minlength="8"
-                    autocomplete="new-password"
-                    required
-                >
-
-                <label for="confirm-password">
-                    Confirm password
-                </label>
-
-                <input
-                    type="password"
-                    id="confirm-password"
-                    placeholder="Enter your password again"
-                    minlength="8"
-                    autocomplete="new-password"
-                    required
-                >
-
-                <button type="submit">
-                    Create account
-                </button>
-
+            <form id="signup-form" data-auth-form="signup" hidden>
+                <label for="signup-email">Email</label>
+                <input id="signup-email" type="email" autocomplete="email" required placeholder="you@example.com">
+                <label for="signup-password">Password</label>
+                <input id="signup-password" type="password" autocomplete="new-password" required minlength="8" placeholder="Create a password">
+                <p class="auth-hint">Use a password that meets the user pool's password policy.</p>
+                <button class="auth-primary" type="submit">Create account</button>
             </form>
-
-            <div id="join-error" class="error"></div>
-
+            <form id="confirm-form" data-auth-form="confirm" hidden>
+                <h2>Verify your email</h2>
+                <label for="confirm-email">Email</label>
+                <input id="confirm-email" type="email" autocomplete="email" required>
+                <label for="confirm-code">Verification code</label>
+                <input id="confirm-code" inputmode="numeric" autocomplete="one-time-code" required placeholder="Code from your email">
+                <button class="auth-primary" type="submit">Verify email</button>
+            </form>
+            <form id="reset-password-form" data-auth-form="reset" hidden>
+                <h2>Reset your password</h2>
+                <label for="reset-email">Email</label>
+                <input id="reset-email" type="email" autocomplete="email" required>
+                <label for="reset-code">Reset code</label>
+                <input id="reset-code" autocomplete="one-time-code" required placeholder="Code from your email">
+                <label for="reset-new-password">New password</label>
+                <input id="reset-new-password" type="password" autocomplete="new-password" required minlength="8">
+                <button class="auth-primary" type="submit">Set new password</button>
+            </form>
+            <p id="auth-message" role="status" aria-live="polite"></p>
+            <p class="auth-legal">Your password is handled by Amazon Cognito and is never stored in OPEN-chat's database.</p>
         </div>
-
     </section>
 
+    <!-- Room selection screen shown after successful Cognito sign-in -->
+    <section id="join-screen" class="screen hidden">
+        <div class="join-card">
+            <div class="logo" aria-hidden="true">⚡</div>
+            <h1>OPEN-chat</h1>
+            <p class="subtitle">Choose a room and start a conversation.</p>
+            <p class="join-account">Signed in as <strong id="account-label"></strong></p>
+            <label for="username">Chat display name</label>
+            <input type="text" id="username" maxlength="100" readonly>
+            <label for="room-input">Room name</label>
+            <input type="text" id="room-input" maxlength="50" value="general" placeholder="general">
+            <button id="join-chat-button" type="button">Join chat</button>
+            <button id="join-logout-button" class="auth-link" type="button">Sign out</button>
+        </div>
+    </section>
 
-<!-- ============================= -->
+    <!-- ============================= -->
 <!-- Chat Screen                   -->
 <!-- ============================= -->
 
@@ -161,15 +110,14 @@
 
                 <div class="header-info">
 
-                    <h2>Serverless Chat</h2>
+                    <h2>OPEN-chat</h2>
 
                     <span id="current-room">
                         # general
                     </span>
 
-                    <button id="logout-button" class="logout-button" type="button">
-                        Log out
-                    </button>
+                    <span id="chat-account-label" class="chat-account-label"></span>
+                    <button id="logout-button" class="logout-button" type="button">Sign out</button>
 
                 </div>
 

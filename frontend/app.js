@@ -2,9 +2,6 @@
 const WS_BASE_URL =
     "wss://2cjbu9asnh.execute-api.ap-south-1.amazonaws.com/prod";
 
-// Replace this with the AuthApiURL output from your SAM deployment.
-const AUTH_API_BASE_URL = "https://706ib0ell4.execute-api.ap-south-1.amazonaws.com";
-
 const DEFAULT_ROOMS = ["general", "development", "random"];
 const MAX_RECONNECT_ATTEMPTS = 5;
 const RECONNECT_BASE_DELAY_MS = 1_000;
@@ -20,18 +17,14 @@ let intentionalClose = false;
 let seenMessageIds = new Set();
 let unreadMessages = 0;
 
+const authScreen = document.getElementById("auth-screen");
 const joinScreen = document.getElementById("join-screen");
 const chatScreen = document.getElementById("chat-screen");
-const loginForm = document.getElementById("login-form");
-const registerForm = document.getElementById("register-form");
 const usernameInput = document.getElementById("username");
-const loginPasswordInput = document.getElementById("login-password");
-const registerUsernameInput = document.getElementById("register-username");
-const registerPasswordInput = document.getElementById("register-password");
-const confirmPasswordInput = document.getElementById("confirm-password");
-const joinError = document.getElementById("join-error");
-const loginTab = document.getElementById("login-tab");
-const registerTab = document.getElementById("register-tab");
+const roomInput = document.getElementById("room-input");
+const joinChatButton = document.getElementById("join-chat-button");
+const joinLogoutButton = document.getElementById("join-logout-button");
+const accountLabel = document.getElementById("chat-account-label");
 const messagesContainer = document.getElementById("messages");
 const messageForm = document.getElementById("message-form");
 const messageInput = document.getElementById("message-input");
@@ -44,34 +37,36 @@ const roomList = document.getElementById("room-list");
 const newRoomForm = document.getElementById("new-room-form");
 const newRoomInput = document.getElementById("new-room-input");
 const newMessagesButton = document.getElementById("new-messages-button");
-const logoutButton = document.getElementById("logout-button");
 
 restoreJoinDetails();
 
-loginForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-    authenticate("login", {
-        username: usernameInput.value.trim(),
-        password: loginPasswordInput.value
-    }, loginForm);
-});
-
-registerForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const password = registerPasswordInput.value;
-    if (password !== confirmPasswordInput.value) {
-        joinError.textContent = "Passwords do not match.";
-        confirmPasswordInput.focus();
+joinChatButton.addEventListener("click", () => {
+    const room = normaliseRoomName(roomInput.value || "general");
+    if (!room) {
+        roomInput.setCustomValidity("Use 1–50 letters, numbers, hyphens, or underscores.");
+        roomInput.reportValidity();
         return;
     }
-    authenticate("register", {
-        username: registerUsernameInput.value.trim(),
-        password
-    }, registerForm);
+    roomInput.setCustomValidity("");
+
+    const accessToken = window.OPENCHAT_AUTH?.getAccessToken();
+    if (!accessToken) {
+        window.OPENCHAT_AUTH?.logout();
+        return;
+    }
+
+    username = usernameInput.value.trim() || window.OPENCHAT_AUTH.getEmail() || "User";
+    sessionToken = accessToken;
+    currentRoom = room;
+    localStorage.setItem("serverless-chat.room", currentRoom);
+    saveJoinDetails();
+    if (accountLabel) accountLabel.textContent = window.OPENCHAT_AUTH.getEmail() || username;
+    showChatScreen();
+    switchRoom(currentRoom, { initial: true });
 });
 
-loginTab.addEventListener("click", () => showAuthForm("login"));
-registerTab.addEventListener("click", () => showAuthForm("register"));
+roomInput.addEventListener("input", () => roomInput.setCustomValidity(""));
+joinLogoutButton.addEventListener("click", () => window.OPENCHAT_AUTH?.logout());
 
 messageForm.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -134,7 +129,6 @@ messagesContainer.addEventListener("scroll", () => {
 });
 
 backButton.addEventListener("click", leaveChat);
-logoutButton.addEventListener("click", leaveChat);
 
 window.addEventListener("online", () => {
     if (shouldReconnect && !isSocketOpen()) connectToRoom(currentRoom);
@@ -149,51 +143,6 @@ function showChatScreen() {
     chatScreen.classList.remove("hidden");
 }
 
-async function authenticate(action, credentials, form) {
-    const submitButton = form.querySelector("button[type=submit]");
-    const originalLabel = submitButton.textContent;
-    joinError.textContent = "";
-    submitButton.disabled = true;
-    submitButton.textContent = action === "login" ? "Logging in…" : "Creating account…";
-
-    try {
-        const response = await fetch(`${AUTH_API_BASE_URL}/auth/${action}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(credentials)
-        });
-        const data = await response.json().catch(() => ({}));
-        if (!response.ok) throw new Error(data.error || "Unable to authenticate. Please try again.");
-
-        username = data.username;
-        sessionToken = data.token;
-        currentRoom = localStorage.getItem("serverless-chat.room") || "general";
-        saveJoinDetails();
-        loginPasswordInput.value = "";
-        registerPasswordInput.value = "";
-        confirmPasswordInput.value = "";
-        showChatScreen();
-        switchRoom(currentRoom, { initial: true });
-    } catch (error) {
-        joinError.textContent = error.message || "Unable to authenticate. Please try again.";
-    } finally {
-        submitButton.disabled = false;
-        submitButton.textContent = originalLabel;
-    }
-}
-
-function showAuthForm(formName) {
-    const isLogin = formName === "login";
-    loginForm.classList.toggle("hidden", !isLogin);
-    registerForm.classList.toggle("hidden", isLogin);
-    loginTab.classList.toggle("active", isLogin);
-    registerTab.classList.toggle("active", !isLogin);
-    loginTab.setAttribute("aria-selected", String(isLogin));
-    registerTab.setAttribute("aria-selected", String(!isLogin));
-    joinError.textContent = "";
-    (isLogin ? usernameInput : registerUsernameInput).focus();
-}
-
 function connectToRoom(room) {
     clearReconnectTimer();
     if (!navigator.onLine) {
@@ -206,9 +155,20 @@ function connectToRoom(room) {
         "connecting"
     );
 
-    const connectingSocket = new WebSocket(
-        `${WS_BASE_URL}?roomId=${encodeURIComponent(room)}&token=${encodeURIComponent(sessionToken)}`
-    );
+    const accessToken = window.OPENCHAT_AUTH?.getAccessToken();
+    if (!accessToken) {
+        updateConnectionStatus("Sign in required", "disconnected");
+        window.OPENCHAT_AUTH?.logout();
+        return;
+    }
+    sessionToken = accessToken;
+
+    // API Gateway WebSocket's browser client cannot set custom Authorization headers.
+    // The initial implementation passes the access token as a query parameter.
+    const url = new URL(WS_BASE_URL);
+    url.searchParams.set("roomId", room);
+    url.searchParams.set("token", accessToken);
+    const connectingSocket = new WebSocket(url.toString());
     socket = connectingSocket;
 
     connectingSocket.onopen = () => {
@@ -344,13 +304,11 @@ function leaveChat() {
     clearReconnectTimer();
     if (socket) socket.close();
     socket = null;
-    username = "";
     currentRoom = "";
     sessionToken = "";
     chatScreen.classList.add("hidden");
     joinScreen.classList.remove("hidden");
-    loginPasswordInput.value = "";
-    joinError.textContent = "";
+    if (roomInput) roomInput.value = localStorage.getItem("serverless-chat.room") || "general";
     updateConnectionStatus("Disconnected", "disconnected");
 }
 
@@ -450,12 +408,12 @@ function getInitials(name) {
 }
 
 function saveJoinDetails() {
-    localStorage.setItem("serverless-chat.username", username);
-    localStorage.setItem("serverless-chat.room", currentRoom);
+    // Keep room preference only; Cognito owns the authenticated identity.
+    if (currentRoom) localStorage.setItem("serverless-chat.room", currentRoom);
 }
 
 function restoreJoinDetails() {
-    usernameInput.value = localStorage.getItem("serverless-chat.username") || "";
+    if (roomInput) roomInput.value = localStorage.getItem("serverless-chat.room") || "general";
     getCustomRooms().forEach(ensureRoomButton);
 }
 
@@ -495,3 +453,20 @@ function clearDraft(room) {
 function showTransientStatus(message) {
     connectionStatus.textContent = message;
 }
+
+
+/* The Cognito UI owns sign-in/sign-out. This hook lets it close the socket
+   before clearing the local authentication session. */
+window.OPENCHAT_CLOSE_SOCKET = function () {
+    shouldReconnect = false;
+    intentionalClose = true;
+    clearReconnectTimer();
+    if (socket) {
+        try { socket.close(1000, "User signed out"); } catch (_) {}
+    }
+    socket = null;
+    sessionToken = "";
+    currentRoom = "";
+    username = "";
+    updateConnectionStatus("Disconnected", "disconnected");
+};
