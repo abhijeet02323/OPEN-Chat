@@ -1,6 +1,6 @@
 // Replace this value with the WebSocket URL output from your SAM deployment.
 const WS_BASE_URL =
-    "wss://2cjbu9asnh.execute-api.ap-south-1.amazonaws.com/prod";
+    "websocker_api";"WEBSOCKET_API_URL"; // e.g., wss://abc123.execute-api.us-east-1.amazonaws.com/Prod
 
 const DEFAULT_ROOMS = ["general", "development", "random"];
 const MAX_RECONNECT_ATTEMPTS = 5;

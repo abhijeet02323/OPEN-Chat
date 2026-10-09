@@ -1,16 +1,16 @@
-# ⚡ Serverless Chat
+# ⚡ OPEN CHAT
 
 A real-time messaging application built using a **serverless AWS architecture**. The project uses **Amazon API Gateway WebSocket APIs, AWS Lambda, and Amazon DynamoDB** to provide real-time communication without maintaining a traditional always-running chat server.
 
 The frontend is a lightweight **HTML, CSS, and JavaScript** application that connects to the AWS WebSocket endpoint. User registration and login are handled by Lambda functions backed by MongoDB; chat messages and connection state remain in DynamoDB.
 
-> **Project status:** Working MVP with room-aware real-time messaging, message history, responsive chat UI, and AWS SAM-based infrastructure deployment. Authentication, advanced presence features, pagination, and additional production hardening are planned for upcoming versions.
+> **Project status:** Working MVP with room-aware real-time messaging, message history, responsive chat UI, and AWS SAM-based infrastructure deployment.New Planned versions are in production.
 
 ## 📌 Table of Contents
 
 - [About the Project](#-about-the-project)
-- [Architecture](#-architecture)
 - [Key Features](#-key-features)
+- [Architecture](#-architecture)
 - [Technology Stack](#-technology-stack)
 - [How It Works](#-how-it-works)
 - [Project Structure](#-project-structure)
@@ -21,16 +21,12 @@ The frontend is a lightweight **HTML, CSS, and JavaScript** application that con
 - [Using the Application](#-using-the-application)
 - [Testing](#-testing)
 - [How This Differs From Traditional Chat Systems](#-how-this-differs-from-traditional-chat-systems)
-- [Security and Current Limitations](#-security-and-current-limitations)
-- [Roadmap](#-roadmap)
 - [Contributing](#-contributing)
-- [Versioning](#-versioning)
-- [License](#-license)
 - [Author](#-author)
 
 ## 🚀 About the Project
 
-**Serverless Chat** is a real-time chat application designed to demonstrate how a modern messaging system can be built using AWS managed and serverless services.
+**OPEN Chat** is a real-time chat application designed to demonstrate how a modern messaging system can be built using AWS managed and serverless services.
 
 Instead of running a dedicated Node.js, Python, or Java chat server continuously, the application uses API Gateway WebSocket APIs, Lambda functions, and DynamoDB.
 
@@ -283,8 +279,8 @@ The AWS identity used for deployment needs sufficient permissions for the resour
 ### 1. Clone
 
 ```bash
-git clone https://github.com/<abhijeet02323>/serverless-chat.git
-cd serverless-chat
+git clone https://github.com/<abhijeet02323>/OPEN-chat.git
+cd OPEN-Chat
 ```
 
 ### 2. Review configuration
@@ -557,12 +553,6 @@ aws cloudformation delete-stack   --stack-name <stack-name>   --region <region>
 ```
 
 > **Warning:** Deleting the stack can remove resources created by it, including DynamoDB resources and stored data, depending on resource policies. Review the CloudFormation configuration before deleting a production stack.
-
-## 📄 License
-
-This project is intended to be open source.
-
-Add a `LICENSE` file before publishing the repository. A permissive license such as **MIT** may be appropriate for an educational/open-source project, but the repository owner should select the license that matches the intended usage and contribution policy.
 
 ## 👨‍💻 Author
 
