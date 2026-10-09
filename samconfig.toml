@@ -18,7 +18,7 @@ capabilities = "CAPABILITY_IAM"
 confirm_changeset = true
 resolve_s3 = true
 s3_prefix = "serverless-chat"
-parameter_overrides = "StageName=\"prod\""
+parameter_overrides = "StageName=\"prod\" CognitoUserPoolId=\"ap-south-1_VI4tKQ38I\" CognitoAppClientId=\"7nqse59taedut5rvpje2mqvru6\""
 image_repositories = []
 
 [default.package.parameters]
