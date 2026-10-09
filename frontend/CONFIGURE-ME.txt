@@ -1,0 +1,1 @@
+Edit frontend/auth.js and replace REPLACE_WITH_USER_POOL_ID and REPLACE_WITH_PUBLIC_APP_CLIENT_ID.

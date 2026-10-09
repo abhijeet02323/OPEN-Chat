@@ -1,0 +1,22 @@
+.auth-screen { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:28px 16px; background:radial-gradient(circle at 12% 10%,#e5f1ff 0,transparent 35%),linear-gradient(135deg,#f8fbff,#eef2ff); }
+.auth-card { width:min(100%,440px); background:rgba(255,255,255,.96); border:1px solid #e3eaf5; border-radius:24px; padding:32px; box-shadow:0 24px 70px rgba(29,55,99,.12); color:#172033; }
+.auth-brand-mark { width:48px;height:48px;display:grid;place-items:center;border-radius:15px;background:linear-gradient(135deg,#2563eb,#7c3aed);color:white;font-size:24px; }
+.auth-eyebrow { margin:18px 0 6px; color:#4f46e5; font-weight:800; letter-spacing:.13em; font-size:.75rem; }
+.auth-card h1 { margin:0; font-size:clamp(1.65rem,5vw,2.1rem); line-height:1.15; letter-spacing:-.04em; }
+.auth-subtitle { color:#667085; line-height:1.55; margin:12px 0 24px; }
+.auth-tabs { display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#f1f4fa;padding:5px;border-radius:12px;margin-bottom:22px; }
+.auth-tabs button { border:0;border-radius:9px;padding:11px;background:transparent;color:#667085;font-weight:700;cursor:pointer; }
+.auth-tabs button.active { background:white;color:#25345a;box-shadow:0 2px 8px #17203312; }
+.auth-card form { display:flex;flex-direction:column;gap:9px; }
+.auth-card label { font-size:.88rem;font-weight:700;color:#344054;margin-top:6px; }
+.auth-card input { box-sizing:border-box;width:100%;border:1px solid #d6deea;border-radius:11px;padding:13px 14px;font:inherit;outline:none;background:#fff; }
+.auth-card input:focus { border-color:#6366f1;box-shadow:0 0 0 3px #6366f120; }
+.auth-primary { margin-top:12px;border:0;border-radius:11px;padding:14px;background:linear-gradient(100deg,#2563eb,#6d4aff);color:#fff;font-weight:800;font-size:1rem;cursor:pointer; }
+.auth-primary:hover { filter:brightness(1.04);transform:translateY(-1px); }
+.auth-link { border:0;background:transparent;color:#4f46e5;padding:8px;cursor:pointer;font-weight:700; }
+.auth-hint,.auth-legal { color:#667085;font-size:.8rem;line-height:1.5; }
+#auth-message { min-height:20px;font-size:.9rem;line-height:1.45; }
+#auth-message.error { color:#b42318; }
+#auth-message.success { color:#067647; }
+.logout-button { border:1px solid #d7deea;background:#fff;border-radius:10px;padding:9px 12px;color:#344054;cursor:pointer; }
+@media(max-width:480px) { .auth-card { padding:24px 20px;border-radius:20px; } }

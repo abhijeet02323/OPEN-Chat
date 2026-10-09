@@ -8,15 +8,13 @@ Parameters:
     Type: String
     Default: prod
 
-  MongoDbUri:
+  CognitoUserPoolId:
     Type: String
-    NoEcho: true
-    Description: MongoDB connection string for the authentication users database.
+    Description: Cognito User Pool ID created in the same AWS region.
 
-  AuthTokenSecret:
+  CognitoAppClientId:
     Type: String
-    NoEcho: true
-    Description: A long random secret used to sign chat session tokens.
+    Description: Public Cognito app client ID; it must not have a client secret.
 
 Resources:
 
@@ -75,56 +73,38 @@ Resources:
       ProtocolType: WEBSOCKET
       RouteSelectionExpression: '$request.body.action'
 
-  AuthApi:
-    Type: AWS::Serverless::HttpApi
-    Properties:
-      CorsConfiguration:
-        AllowOrigins:
-          - '*'
-        AllowHeaders:
-          - Content-Type
-        AllowMethods:
-          - POST
-
-  RegisterFunction:
+  CognitoAuthorizerFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: functions/auth_register/
+      CodeUri: functions/auth_authorizer/
       Handler: app.lambda_handler
       Runtime: python3.14
       Timeout: 10
       Environment:
         Variables:
-          MONGODB_URI: !Ref MongoDbUri
-          MONGODB_DATABASE: serverless_chat
-          AUTH_TOKEN_SECRET: !Ref AuthTokenSecret
-      Events:
-        Register:
-          Type: HttpApi
-          Properties:
-            ApiId: !Ref AuthApi
-            Path: /auth/register
-            Method: POST
+          COGNITO_USER_POOL_ID: !Ref CognitoUserPoolId
+          COGNITO_APP_CLIENT_ID: !Ref CognitoAppClientId
 
-  LoginFunction:
-    Type: AWS::Serverless::Function
+  WebSocketCognitoAuthorizer:
+    Type: AWS::ApiGatewayV2::Authorizer
     Properties:
-      CodeUri: functions/auth_login/
-      Handler: app.lambda_handler
-      Runtime: python3.14
-      Timeout: 10
-      Environment:
-        Variables:
-          MONGODB_URI: !Ref MongoDbUri
-          MONGODB_DATABASE: serverless_chat
-          AUTH_TOKEN_SECRET: !Ref AuthTokenSecret
-      Events:
-        Login:
-          Type: HttpApi
-          Properties:
-            ApiId: !Ref AuthApi
-            Path: /auth/login
-            Method: POST
+      ApiId: !Ref ChatWebSocketApi
+      Name: CognitoAccessTokenAuthorizer
+      AuthorizerType: REQUEST
+      IdentitySource:
+        - route.request.querystring.token
+      AuthorizerUri: !Sub
+        - 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${FunctionArn}/invocations'
+        - FunctionArn: !GetAtt CognitoAuthorizerFunction.Arn
+
+  CognitoAuthorizerPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref CognitoAuthorizerFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub
+        'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ChatWebSocketApi}/authorizers/${WebSocketCognitoAuthorizer}'
 
   ConnectFunction:
     Type: AWS::Serverless::Function
@@ -137,7 +117,6 @@ Resources:
       Environment:
         Variables:
           CONNECTIONS_TABLE: !Ref ConnectionsTable
-          AUTH_TOKEN_SECRET: !Ref AuthTokenSecret
 
       Policies:
         - DynamoDBCrudPolicy:
@@ -268,7 +247,8 @@ Resources:
     Properties:
       ApiId: !Ref ChatWebSocketApi
       RouteKey: '$connect'
-      AuthorizationType: NONE
+      AuthorizationType: CUSTOM
+      AuthorizerId: !Ref WebSocketCognitoAuthorizer
       Target: !Sub 'integrations/${ConnectIntegration}'
 
   DisconnectRoute:
@@ -294,7 +274,7 @@ Resources:
       AuthorizationType: NONE
       Target: !Sub 'integrations/${GetMessagesIntegration}'
 
-  ChatDeployment:
+  ChatDeploymentWithCognitoAuth:
     Type: AWS::ApiGatewayV2::Deployment
     DependsOn:
       - ConnectRoute
@@ -309,7 +289,7 @@ Resources:
     Properties:
       ApiId: !Ref ChatWebSocketApi
       StageName: !Ref StageName
-      DeploymentId: !Ref ChatDeployment
+      DeploymentId: !Ref ChatDeploymentWithCognitoAuth
 
   ConnectPermission:
     Type: AWS::Lambda::Permission
@@ -345,10 +325,6 @@ Outputs:
     Description: WebSocket URL for the chat application
     Value: !Sub
       'wss://${ChatWebSocketApi}.execute-api.${AWS::Region}.amazonaws.com/${StageName}'
-
-  AuthApiURL:
-    Description: HTTP API URL for registration and login. Set this in frontend/app.js.
-    Value: !Sub 'https://${AuthApi}.execute-api.${AWS::Region}.amazonaws.com'
 
   ConnectionsTable:
     Description: DynamoDB connections table

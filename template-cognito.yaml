@@ -1,0 +1,335 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Description: Serverless real-time chat application
+
+Parameters:
+  StageName:
+    Type: String
+    Default: prod
+
+  CognitoUserPoolId:
+    Type: String
+    Description: Cognito User Pool ID created in the same AWS region.
+
+  CognitoAppClientId:
+    Type: String
+    Description: Public Cognito app client ID; it must not have a client secret.
+
+Resources:
+
+  ConnectionsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub '${AWS::StackName}-connections'
+      BillingMode: PAY_PER_REQUEST
+
+      AttributeDefinitions:
+        - AttributeName: roomId
+          AttributeType: S
+
+        - AttributeName: connectionId
+          AttributeType: S
+
+      KeySchema:
+        - AttributeName: roomId
+          KeyType: HASH
+
+        - AttributeName: connectionId
+          KeyType: RANGE
+
+      GlobalSecondaryIndexes:
+        - IndexName: ConnectionIdIndex
+          KeySchema:
+            - AttributeName: connectionId
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+
+  MessagesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub '${AWS::StackName}-messages'
+      BillingMode: PAY_PER_REQUEST
+
+      AttributeDefinitions:
+        - AttributeName: roomId
+          AttributeType: S
+
+        - AttributeName: timestamp
+          AttributeType: S
+
+      KeySchema:
+        - AttributeName: roomId
+          KeyType: HASH
+
+        - AttributeName: timestamp
+          KeyType: RANGE
+
+  ChatWebSocketApi:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name: !Sub '${AWS::StackName}-websocket'
+      ProtocolType: WEBSOCKET
+      RouteSelectionExpression: '$request.body.action'
+
+  CognitoAuthorizerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/auth_authorizer/
+      Handler: app.lambda_handler
+      Runtime: python3.14
+      Timeout: 10
+      Environment:
+        Variables:
+          COGNITO_USER_POOL_ID: !Ref CognitoUserPoolId
+          COGNITO_APP_CLIENT_ID: !Ref CognitoAppClientId
+
+  WebSocketCognitoAuthorizer:
+    Type: AWS::ApiGatewayV2::Authorizer
+    Properties:
+      ApiId: !Ref ChatWebSocketApi
+      Name: CognitoAccessTokenAuthorizer
+      AuthorizerType: REQUEST
+      IdentitySource:
+        - route.request.querystring.token
+      AuthorizerUri: !Sub
+        - 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${FunctionArn}/invocations'
+        - FunctionArn: !GetAtt CognitoAuthorizerFunction.Arn
+
+  CognitoAuthorizerPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref CognitoAuthorizerFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub
+        'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ChatWebSocketApi}/authorizers/${WebSocketCognitoAuthorizer}'
+
+  ConnectFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/connect/
+      Handler: app.lambda_handler
+      Runtime: python3.14
+      Timeout: 10
+
+      Environment:
+        Variables:
+          CONNECTIONS_TABLE: !Ref ConnectionsTable
+
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ConnectionsTable
+
+  DisconnectFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/disconnect/
+      Handler: app.lambda_handler
+      Runtime: python3.14
+      Timeout: 10
+
+      Environment:
+        Variables:
+          CONNECTIONS_TABLE: !Ref ConnectionsTable
+
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ConnectionsTable
+
+  SendMessageFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/send_message/
+      Handler: app.lambda_handler
+      Runtime: python3.14
+      Timeout: 15
+
+      Environment:
+        Variables:
+          CONNECTIONS_TABLE: !Ref ConnectionsTable
+          MESSAGES_TABLE: !Ref MessagesTable
+          WEBSOCKET_ENDPOINT: !Sub
+            - '${ApiEndpoint}/${Stage}'
+            - ApiEndpoint: !Sub
+                'https://${ChatWebSocketApi}.execute-api.${AWS::Region}.amazonaws.com'
+              Stage: !Ref StageName
+
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ConnectionsTable
+
+        - DynamoDBCrudPolicy:
+            TableName: !Ref MessagesTable
+
+        - Statement:
+            - Effect: Allow
+              Action:
+                - execute-api:ManageConnections
+              Resource: !Sub
+                - 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/${Stage}/*'
+                - ApiId: !Ref ChatWebSocketApi
+                  Stage: !Ref StageName
+
+  GetMessagesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/get_messages/
+      Handler: app.lambda_handler
+      Runtime: python3.14
+      Timeout: 10
+
+      Environment:
+        Variables:
+          MESSAGES_TABLE: !Ref MessagesTable
+          CONNECTIONS_TABLE: !Ref ConnectionsTable
+          WEBSOCKET_ENDPOINT: !Sub
+            - '${ApiEndpoint}/${Stage}'
+            - ApiEndpoint: !Sub
+                'https://${ChatWebSocketApi}.execute-api.${AWS::Region}.amazonaws.com'
+              Stage: !Ref StageName
+
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref MessagesTable
+
+        - DynamoDBReadPolicy:
+            TableName: !Ref ConnectionsTable
+
+        - Statement:
+            - Effect: Allow
+              Action:
+                - execute-api:ManageConnections
+              Resource: !Sub
+                - 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/${Stage}/*'
+                - ApiId: !Ref ChatWebSocketApi
+                  Stage: !Ref StageName
+
+  ConnectIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref ChatWebSocketApi
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !Sub
+        - 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${FunctionArn}/invocations'
+        - FunctionArn: !GetAtt ConnectFunction.Arn
+
+  DisconnectIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref ChatWebSocketApi
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !Sub
+        - 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${FunctionArn}/invocations'
+        - FunctionArn: !GetAtt DisconnectFunction.Arn
+
+  SendMessageIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref ChatWebSocketApi
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !Sub
+        - 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${FunctionArn}/invocations'
+        - FunctionArn: !GetAtt SendMessageFunction.Arn
+
+  GetMessagesIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref ChatWebSocketApi
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !Sub
+        - 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${FunctionArn}/invocations'
+        - FunctionArn: !GetAtt GetMessagesFunction.Arn
+
+  ConnectRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref ChatWebSocketApi
+      RouteKey: '$connect'
+      AuthorizationType: CUSTOM
+      AuthorizerId: !Ref WebSocketCognitoAuthorizer
+      Target: !Sub 'integrations/${ConnectIntegration}'
+
+  DisconnectRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref ChatWebSocketApi
+      RouteKey: '$disconnect'
+      Target: !Sub 'integrations/${DisconnectIntegration}'
+
+  SendMessageRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref ChatWebSocketApi
+      RouteKey: sendMessage
+      AuthorizationType: NONE
+      Target: !Sub 'integrations/${SendMessageIntegration}'
+
+  GetMessagesRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref ChatWebSocketApi
+      RouteKey: getMessages
+      AuthorizationType: NONE
+      Target: !Sub 'integrations/${GetMessagesIntegration}'
+
+  ChatDeploymentWithCognitoAuth:
+    Type: AWS::ApiGatewayV2::Deployment
+    DependsOn:
+      - ConnectRoute
+      - DisconnectRoute
+      - SendMessageRoute
+      - GetMessagesRoute
+    Properties:
+      ApiId: !Ref ChatWebSocketApi
+
+  ChatStage:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      ApiId: !Ref ChatWebSocketApi
+      StageName: !Ref StageName
+      DeploymentId: !Ref ChatDeploymentWithCognitoAuth
+
+  ConnectPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref ConnectFunction
+      Principal: apigateway.amazonaws.com
+
+  DisconnectPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref DisconnectFunction
+      Principal: apigateway.amazonaws.com
+
+  SendMessagePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref SendMessageFunction
+      Principal: apigateway.amazonaws.com
+
+  GetMessagesPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref GetMessagesFunction
+      Principal: apigateway.amazonaws.com
+
+Outputs:
+
+  WebSocketURL:
+    Description: WebSocket URL for the chat application
+    Value: !Sub
+      'wss://${ChatWebSocketApi}.execute-api.${AWS::Region}.amazonaws.com/${StageName}'
+
+  ConnectionsTable:
+    Description: DynamoDB connections table
+    Value: !Ref ConnectionsTable
+
+  MessagesTable:
+    Description: DynamoDB messages table
+    Value: !Ref MessagesTable

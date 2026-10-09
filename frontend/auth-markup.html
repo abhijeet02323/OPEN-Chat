@@ -1,0 +1,45 @@
+<!-- Insert immediately after <body> in index.html -->
+<section id="auth-screen" class="screen auth-screen">
+  <div class="auth-card">
+    <div class="auth-brand-mark">⚡</div>
+    <p class="auth-eyebrow">OPEN-chat</p>
+    <h1>Good conversations start here.</h1>
+    <p class="auth-subtitle">Sign in or create an account to join your chat rooms.</p>
+    <div class="auth-tabs">
+      <button type="button" data-auth-mode="signin" class="active">Sign in</button>
+      <button type="button" data-auth-mode="signup">Create account</button>
+    </div>
+    <form id="signin-form" data-auth-form="signin">
+      <label for="signin-email">Email</label>
+      <input id="signin-email" type="email" autocomplete="username" required placeholder="you@example.com">
+      <label for="signin-password">Password</label>
+      <input id="signin-password" type="password" autocomplete="current-password" required minlength="8" placeholder="Your password">
+      <button class="auth-primary" type="submit">Sign in</button>
+      <button class="auth-link" id="forgot-password" type="button">Forgot password?</button>
+    </form>
+    <form id="signup-form" data-auth-form="signup" hidden>
+      <label for="signup-email">Email</label>
+      <input id="signup-email" type="email" autocomplete="email" required placeholder="you@example.com">
+      <label for="signup-password">Password</label>
+      <input id="signup-password" type="password" autocomplete="new-password" required minlength="8" placeholder="Create a password">
+      <p class="auth-hint">Use a password that meets your Cognito user-pool policy.</p>
+      <button class="auth-primary" type="submit">Create account</button>
+    </form>
+    <form id="confirm-form" data-auth-form="confirm" hidden>
+      <h2>Verify your email</h2>
+      <label for="confirm-email">Email</label>
+      <input id="confirm-email" type="email" autocomplete="email" required>
+      <label for="confirm-code">Verification code</label>
+      <input id="confirm-code" inputmode="numeric" autocomplete="one-time-code" required placeholder="Code from your email">
+      <button class="auth-primary" type="submit">Verify email</button>
+    </form>
+    <p id="auth-message" role="status" aria-live="polite"></p>
+    <p class="auth-legal">Your password is handled by Amazon Cognito and is never stored in OPEN-chat's database.</p>
+  </div>
+</section>
+
+<!-- Add this button inside the existing chat header. -->
+<button id="logout-button" type="button" class="logout-button">Sign out</button>
+
+<!-- Add before app.js at the end of body. -->
+<script src="auth.js"></script>
